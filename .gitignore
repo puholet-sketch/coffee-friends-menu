@@ -1,0 +1,15 @@
+.env
+.env.*
+*.local
+node_modules/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.ai/
+tg/
+**/tokens*
+**/*secret*
+__pycache__/
+*.pyc
+.gh-publish/

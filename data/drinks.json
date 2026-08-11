@@ -1,0 +1,519 @@
+{
+  "brand": {
+    "name": "CoffeeFriends",
+    "tagline": "БЦ Китеж · 2\u00A0и\u00A011\u00A0этаж",
+    "accent": "Coffee",
+    "accentGold": "Friends"
+  },
+  "settings": {
+    "slideDurationSec": 5,
+    "orientation": "portrait",
+    "aspectWidth": 9,
+    "aspectHeight": 16,
+    "width": 1080,
+    "height": 1920,
+    "showPrice": true
+  },
+  "categories": [
+    {
+      "id": "signature",
+      "title": "Авторские",
+      "drinks": [
+        {
+          "id": "matcha-classic",
+          "name": "Матча классическая",
+          "volume": "350 мл",
+          "price": "от 300 ₽",
+          "description": "японская зелёная матча на молоке",
+          "image": "assets/images/drinks/matcha-classic.jpg",
+          "tags": [
+            "hot",
+            "matcha"
+          ]
+        },
+        {
+          "id": "matcha-blue",
+          "name": "Голубая матча",
+          "volume": "350 мл",
+          "price": "от 320 ₽",
+          "description": "матча латте небесно-голубого цвета",
+          "image": "assets/images/drinks/matcha-blue.jpg",
+          "tags": [
+            "cold",
+            "matcha",
+            "signature"
+          ]
+        },
+        {
+          "id": "matcha-red",
+          "name": "Красная матча",
+          "volume": "350 мл",
+          "price": "от 320 ₽",
+          "description": "матча с малиной — яркий и ягодный",
+          "image": "assets/images/drinks/matcha-red.jpg",
+          "tags": [
+            "cold",
+            "matcha",
+            "signature"
+          ]
+        },
+        {
+          "id": "matcha-pink",
+          "name": "Розовая матча",
+          "volume": "350 мл",
+          "price": "от 320 ₽",
+          "description": "нежная клубничная матча на молоке",
+          "image": "assets/images/drinks/matcha-pink.jpg",
+          "tags": [
+            "cold",
+            "matcha",
+            "signature"
+          ]
+        },
+        {
+          "id": "matcha-mango-chili",
+          "name": "Манго чили матча",
+          "volume": "400 мл",
+          "price": "от 380 ₽",
+          "description": "прохладная матча с манго и острой ноткой",
+          "image": "assets/images/drinks/matcha-mango-chili.jpg",
+          "tags": [
+            "cold",
+            "matcha",
+            "signature"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "coffee",
+      "title": "Кофе",
+      "drinks": [
+        {
+          "id": "amerikano",
+          "name": "Американо",
+          "volume": "250 мл — 180 ₽ · 350 мл — 220 ₽ · 450 мл — 280 ₽",
+          "price": "от 180 ₽",
+          "description": "эспрессо с водой — чистый вкус без молока",
+          "image": "assets/images/drinks/americano.jpg",
+          "tags": [
+            "hot"
+          ]
+        },
+        {
+          "id": "bambl_kofe",
+          "name": "Бамбл Кофе",
+          "volume": "350 мл — 420 ₽ · 450 мл — 450 ₽",
+          "price": "от 420 ₽",
+          "description": "эспрессо, апельсин и карамель — слоистый хит",
+          "image": "assets/images/drinks/bumble-coffee.jpg",
+          "tags": [
+            "hot"
+          ]
+        },
+        {
+          "id": "kapuchino",
+          "name": "Капучино",
+          "volume": "250 мл — 250 ₽ · 350 мл — 300 ₽ · 450 мл — 350 ₽",
+          "price": "от 250 ₽",
+          "description": "эспрессо, молоко и бархатная молочная пенка",
+          "image": "assets/images/drinks/cappuccino.jpg",
+          "tags": [
+            "hot"
+          ]
+        },
+        {
+          "id": "latte",
+          "name": "Латте",
+          "volume": "350 мл — 300 ₽ · 450 мл — 350 ₽",
+          "price": "от 300 ₽",
+          "description": "нежный кофе с большим количеством молока",
+          "image": "assets/images/drinks/latte.jpg",
+          "tags": [
+            "hot"
+          ]
+        },
+        {
+          "id": "mokko",
+          "name": "Мокко",
+          "volume": "350 мл — 320 ₽ · 450 мл — 350 ₽",
+          "price": "от 320 ₽",
+          "description": "шоколад, эспрессо и взбитое молоко",
+          "image": "assets/images/drinks/mocha.jpg",
+          "tags": [
+            "hot"
+          ]
+        },
+        {
+          "id": "raf",
+          "name": "Раф",
+          "volume": "350 мл — 340 ₽ · 450 мл — 380 ₽",
+          "price": "от 340 ₽",
+          "description": "сливочный кофе на сливках с ванилью",
+          "image": "assets/images/drinks/raf.jpg",
+          "tags": [
+            "hot"
+          ]
+        },
+        {
+          "id": "flet_uayt",
+          "name": "Флет Уайт",
+          "volume": "250 мл — 270 ₽ · 350 мл — 330 ₽",
+          "price": "от 270 ₽",
+          "description": "двойной эспрессо и молоко с тонким слоем пенки",
+          "image": "assets/images/drinks/flat-white.jpg",
+          "tags": [
+            "hot"
+          ]
+        },
+        {
+          "id": "espresso",
+          "name": "Эспрессо",
+          "volume": "от 180 ₽",
+          "price": "от 180 ₽",
+          "description": "классический шот, насыщенный и ароматный",
+          "image": "assets/images/drinks/espresso.jpg",
+          "tags": [
+            "hot"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cold_coffee",
+      "title": "Холодный кофе",
+      "drinks": [
+        {
+          "id": "ays_mokko",
+          "name": "Айс Мокко",
+          "volume": "от 320 ₽",
+          "price": "от 320 ₽",
+          "description": "шоколадный кофе со льдом",
+          "image": "assets/images/drinks/ays_mokko.jpg",
+          "tags": [
+            "cold"
+          ]
+        },
+        {
+          "id": "glyase",
+          "name": "Глясе",
+          "volume": "от 250 ₽",
+          "price": "от 250 ₽",
+          "description": "холодный кофе со льдом и мороженым",
+          "image": "assets/images/drinks/glyase.jpg",
+          "tags": []
+        },
+        {
+          "id": "medovyy_staut",
+          "name": "Медовый стаут",
+          "volume": "от 380 ₽",
+          "price": "от 380 ₽",
+          "description": "холодный кофе с мёдом и пенкой стаута",
+          "image": "assets/images/drinks/honey-stout.jpg",
+          "tags": []
+        },
+        {
+          "id": "milksheyk",
+          "name": "Милкшейк",
+          "volume": "от 380 ₽",
+          "price": "от 380 ₽",
+          "description": "густой молочный коктейль",
+          "image": "assets/images/drinks/milksheyk.jpg",
+          "tags": []
+        },
+        {
+          "id": "frapuchino",
+          "name": "Фрапучино",
+          "volume": "450 мл — 400 ₽",
+          "price": "400 ₽",
+          "description": "взбитый холодный кофе со льдом",
+          "image": "assets/images/drinks/frappuccino.jpg",
+          "tags": []
+        },
+        {
+          "id": "espresso_tonik",
+          "name": "Эспрессо Тоник",
+          "volume": "от 380 ₽",
+          "price": "от 380 ₽",
+          "description": "эспрессо на тонике — бодрящий и игристый",
+          "image": "assets/images/drinks/espresso-tonic.jpg",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "seasonal",
+      "title": "Сезонные",
+      "drinks": [
+        {
+          "id": "ays_latte",
+          "name": "Айс латте",
+          "volume": "от 320 ₽",
+          "price": "от 320 ₽",
+          "description": "латте со льдом — освежающий кофе",
+          "image": "assets/images/drinks/iced-latte.jpg",
+          "tags": [
+            "cold"
+          ]
+        },
+        {
+          "id": "raf_avtorskiy",
+          "name": "Раф авторский",
+          "volume": "350 мл — 400 ₽ · 450 мл — 450 ₽",
+          "price": "от 400 ₽",
+          "description": "авторский раф с сезонным акцентом",
+          "image": "assets/images/drinks/raf-signature.jpg",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "tea",
+      "title": "Чай",
+      "drinks": [
+        {
+          "id": "apelsin_imbir",
+          "name": "Апельсин имбирь",
+          "volume": "450 мл — 350 ₽",
+          "price": "350 ₽",
+          "description": "апельсин с имбирём — цитрус и тепло",
+          "image": "assets/images/drinks/apelsin_imbir.jpg",
+          "tags": []
+        },
+        {
+          "id": "ganpauder",
+          "name": "Ганпаудер",
+          "volume": "350 мл — 110 ₽",
+          "price": "110 ₽",
+          "description": "зелёный чай с дымным ароматом",
+          "image": "assets/images/drinks/ganpauder.jpg",
+          "tags": []
+        },
+        {
+          "id": "glintveyn_b_a",
+          "name": "Глинтвейн б\\а",
+          "volume": "450 мл — 300 ₽",
+          "price": "300 ₽",
+          "description": "безалкогольный глинтвейн с пряностями",
+          "image": "assets/images/drinks/glintveyn_b_a.jpg",
+          "tags": []
+        },
+        {
+          "id": "goryachiy_shokolad",
+          "name": "Горячий шоколад",
+          "volume": "350 мл — 350 ₽",
+          "price": "350 ₽",
+          "description": "густой горячий шоколад",
+          "image": "assets/images/drinks/goryachiy_shokolad.jpg",
+          "tags": []
+        },
+        {
+          "id": "grechishnyy_chay",
+          "name": "Гречишный чай",
+          "volume": "от 170 ₽",
+          "price": "от 170 ₽",
+          "description": "Чай",
+          "image": "assets/images/drinks/grechishnyy_chay.jpg",
+          "tags": []
+        },
+        {
+          "id": "imbirnyy_pryanik",
+          "name": "Имбирный пряник",
+          "volume": "350 мл — 400 ₽ · 450 мл — 450 ₽",
+          "price": "от 400 ₽",
+          "description": "имбирный пряник — сезонный фруктовый чай",
+          "image": "assets/images/drinks/imbirnyy_pryanik.jpg",
+          "tags": []
+        },
+        {
+          "id": "kakao",
+          "name": "Какао",
+          "volume": "350 мл — 280 ₽ · 450 мл — 300 ₽",
+          "price": "от 280 ₽",
+          "description": "тёплое какао с молоком",
+          "image": "assets/images/drinks/cocoa.jpg",
+          "tags": []
+        },
+        {
+          "id": "kakao_bryut",
+          "name": "Какао брют",
+          "volume": "350 мл — 320 ₽",
+          "price": "320 ₽",
+          "description": "насыщенное какао без лишней сладости",
+          "image": "assets/images/drinks/kakao_bryut.jpg",
+          "tags": []
+        },
+        {
+          "id": "kitayskiy_chay",
+          "name": "Китайский чай",
+          "volume": "от 200 ₽",
+          "price": "от 200 ₽",
+          "description": "Чай",
+          "image": "assets/images/drinks/kitayskiy_chay.jpg",
+          "tags": []
+        },
+        {
+          "id": "klubnika_smorodina_450_ml",
+          "name": "Клубника-Смородина 450 мл",
+          "volume": "от 350 ₽",
+          "price": "от 350 ₽",
+          "description": "Фруктовые чаи",
+          "image": "assets/images/drinks/klubnika_smorodina_450_ml.jpg",
+          "tags": []
+        },
+        {
+          "id": "malina_imbir",
+          "name": "Малина имбирь",
+          "volume": "450 мл — 300 ₽",
+          "price": "300 ₽",
+          "description": "малина и имбирь — согревающий чай",
+          "image": "assets/images/drinks/malina_imbir.jpg",
+          "tags": []
+        },
+        {
+          "id": "malina_shipovnik_450_ml",
+          "name": "Малина-Шиповник 450 мл",
+          "volume": "от 350 ₽",
+          "price": "от 350 ₽",
+          "description": "Фруктовые чаи",
+          "image": "assets/images/drinks/malina_shipovnik_450_ml.jpg",
+          "tags": []
+        },
+        {
+          "id": "matcha",
+          "name": "Матча",
+          "volume": "350 мл — 300 ₽",
+          "price": "300 ₽",
+          "description": "японская матча на молоке — классика",
+          "image": "assets/images/drinks/matcha-classic.jpg",
+          "tags": [
+            "matcha"
+          ]
+        },
+        {
+          "id": "molochnyy_ulun",
+          "name": "Молочный улун",
+          "volume": "350 мл — 130 ₽",
+          "price": "130 ₽",
+          "description": "молочный улун — сливочные ноты",
+          "image": "assets/images/drinks/molochnyy_ulun.jpg",
+          "tags": []
+        },
+        {
+          "id": "oblepiha_imbir",
+          "name": "Облепиха имбирь",
+          "volume": "450 мл — 350 ₽",
+          "price": "350 ₽",
+          "description": "облепиха, имбирь — яркий и согревающий",
+          "image": "assets/images/drinks/oblepiha_imbir.jpg",
+          "tags": []
+        },
+        {
+          "id": "puer",
+          "name": "Пуэр",
+          "volume": "350 мл — 160 ₽",
+          "price": "160 ₽",
+          "description": "выдержанный пуэр — глубокий вкус",
+          "image": "assets/images/drinks/puer.jpg",
+          "tags": []
+        },
+        {
+          "id": "te_guan_in",
+          "name": "Те гуань инь",
+          "volume": "350 мл — 130 ₽",
+          "price": "130 ₽",
+          "description": "улун с цветочным ароматом",
+          "image": "assets/images/drinks/te_guan_in.jpg",
+          "tags": []
+        },
+        {
+          "id": "travyanoy_chay",
+          "name": "Травяной чай",
+          "volume": "от 230 ₽",
+          "price": "от 230 ₽",
+          "description": "Чай",
+          "image": "assets/images/drinks/travyanoy_chay.jpg",
+          "tags": []
+        },
+        {
+          "id": "tseylon",
+          "name": "Цейлон",
+          "volume": "350 мл — 110 ₽",
+          "price": "110 ₽",
+          "description": "чёрный чай цейлон — классика",
+          "image": "assets/images/drinks/tseylon.jpg",
+          "tags": []
+        },
+        {
+          "id": "chay_v_paketikah",
+          "name": "Чай в пакетиках",
+          "volume": "от 80 ₽",
+          "price": "от 80 ₽",
+          "description": "Чай",
+          "image": "assets/images/drinks/chay_v_paketikah.jpg",
+          "tags": []
+        },
+        {
+          "id": "chay_s_zhasminom",
+          "name": "Чай с жасмином",
+          "volume": "от 130 ₽",
+          "price": "от 130 ₽",
+          "description": "Чай",
+          "image": "assets/images/drinks/chay_s_zhasminom.jpg",
+          "tags": []
+        },
+        {
+          "id": "chay_chabrets",
+          "name": "Чай Чабрец",
+          "volume": "от 130 ₽",
+          "price": "от 130 ₽",
+          "description": "Чай",
+          "image": "assets/images/drinks/chay_chabrets.jpg",
+          "tags": []
+        },
+        {
+          "id": "chay_erl_grey",
+          "name": "Чай Эрл Грей",
+          "volume": "от 130 ₽",
+          "price": "от 130 ₽",
+          "description": "Чай",
+          "image": "assets/images/drinks/chay_erl_grey.jpg",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "lemonade",
+      "title": "Лимонады",
+      "drinks": [
+        {
+          "id": "limonady",
+          "name": "Лимонады",
+          "volume": "от 280 ₽",
+          "price": "от 280 ₽",
+          "description": "домашние лимонады — выбирайте вкус",
+          "image": "assets/images/drinks/lemonade.jpg",
+          "tags": []
+        },
+        {
+          "id": "fresh_350_ml",
+          "name": "Фреш 350 мл",
+          "volume": "от 370 ₽",
+          "price": "от 370 ₽",
+          "description": "свежевыжатый фруктовый сок",
+          "image": "assets/images/drinks/fresh_350_ml.jpg",
+          "tags": []
+        },
+        {
+          "id": "fresh_450_ml",
+          "name": "Фреш 450 мл",
+          "volume": "от 420 ₽",
+          "price": "от 420 ₽",
+          "description": "большая порция свежего фреша",
+          "image": "assets/images/drinks/fresh_450_ml.jpg",
+          "tags": []
+        }
+      ]
+    }
+  ]
+}
