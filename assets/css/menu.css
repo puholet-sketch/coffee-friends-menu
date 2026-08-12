@@ -1,11 +1,11 @@
 /* CoffeeFriends — витринное меню, портрет 9:16 */
 
 :root {
-  --ink: #121212;
-  --text: #ffffff;
-  --muted: #9aa0ae;
-  --paper: #161616;
-  --line: rgba(255, 255, 255, 0.12);
+  --ink: #000000;
+  --text: #000000;
+  --muted: #5f5f5f;
+  --paper: #ffffff;
+  --line: rgba(0, 0, 0, 0.14);
   --gold: #c9b067;
   --gold-light: #e0c878;
   --gold-dim: rgba(201, 176, 103, 0.45);
@@ -32,7 +32,7 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #0a0a0a;
+  background: #ffffff;
   font-family: var(--font-body);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
@@ -44,17 +44,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(ellipse at 30% 10%, rgba(201, 176, 103, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 90%, rgba(201, 176, 103, 0.04) 0%, transparent 45%),
-    #0a0a0a;
+  background: #ffffff;
 }
 
 .board__frame {
   position: relative;
   overflow: hidden;
   background: var(--paper);
-  box-shadow: 0 0 80px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.12);
   width: min(100vw, calc(100vh * 9 / 16));
   height: min(100vh, calc(100vw * 16 / 9));
 }
@@ -161,11 +158,29 @@ body {
   min-height: 0;
   border-radius: 6px;
   overflow: hidden;
-  background: linear-gradient(160deg, #1e1e1e 0%, #141414 100%);
+  background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  isolation: isolate;
+}
+
+.slide__photo::before {
+  content: "";
+  position: absolute;
+  inset: 8% 10% 14%;
+  border-radius: 999px;
+  filter: blur(34px);
+  opacity: 0.42;
+  transform: translateY(2%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.slide__photo > * {
+  position: relative;
+  z-index: 1;
 }
 
 .slide__photo img {
@@ -176,8 +191,57 @@ body {
   display: block;
 }
 
+.slide__photo.accent-ice::before {
+  background:
+    radial-gradient(circle at 30% 40%, rgba(144, 214, 255, 0.85), transparent 34%),
+    radial-gradient(circle at 68% 64%, rgba(198, 236, 255, 0.7), transparent 30%);
+}
+
+.slide__photo.accent-citrus::before {
+  background:
+    radial-gradient(circle at 34% 42%, rgba(255, 217, 84, 0.82), transparent 34%),
+    radial-gradient(circle at 72% 64%, rgba(255, 242, 168, 0.62), transparent 28%);
+}
+
+.slide__photo.accent-berry::before {
+  background:
+    radial-gradient(circle at 34% 42%, rgba(255, 124, 154, 0.72), transparent 34%),
+    radial-gradient(circle at 70% 62%, rgba(207, 67, 119, 0.55), transparent 28%);
+}
+
+.slide__photo.accent-matcha::before {
+  background:
+    radial-gradient(circle at 34% 40%, rgba(163, 221, 115, 0.72), transparent 34%),
+    radial-gradient(circle at 72% 62%, rgba(255, 191, 74, 0.46), transparent 28%);
+}
+
+.slide__photo.accent-cocoa::before {
+  background:
+    radial-gradient(circle at 36% 44%, rgba(181, 122, 74, 0.66), transparent 34%),
+    radial-gradient(circle at 68% 64%, rgba(114, 68, 41, 0.42), transparent 28%);
+}
+
+.slide__photo.accent-coffee::before {
+  background:
+    radial-gradient(circle at 36% 42%, rgba(176, 128, 85, 0.48), transparent 34%),
+    radial-gradient(circle at 68% 64%, rgba(214, 184, 150, 0.34), transparent 28%);
+}
+
+.slide__photo.accent-fresh::before {
+  background:
+    radial-gradient(circle at 34% 42%, rgba(137, 213, 120, 0.56), transparent 34%),
+    radial-gradient(circle at 72% 66%, rgba(255, 131, 96, 0.36), transparent 28%);
+}
+
+.slide__photo.accent-bakery::before,
+.slide__photo.accent-warm::before {
+  background:
+    radial-gradient(circle at 36% 42%, rgba(229, 184, 120, 0.52), transparent 34%),
+    radial-gradient(circle at 70% 66%, rgba(211, 152, 90, 0.34), transparent 28%);
+}
+
 .slide__photo--placeholder {
-  background: linear-gradient(160deg, #222 0%, #161616 100%);
+  background: #ffffff;
 }
 
 .placeholder-cup,
@@ -198,9 +262,9 @@ body {
   transform: translateX(-50%);
   width: 72px;
   height: 92px;
-  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  background: #f2f2f2;
   border-radius: 4px 4px 8px 8px;
-  border: 1px solid rgba(201, 176, 103, 0.2);
+  border: 1px solid rgba(201, 176, 103, 0.35);
 }
 
 .placeholder-cup__lid {
@@ -210,7 +274,7 @@ body {
   transform: translateX(-50%);
   width: 80px;
   height: 14px;
-  background: #333;
+  background: #e9e9e9;
   border-radius: 3px;
 }
 
@@ -218,8 +282,8 @@ body {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  border: 2px solid rgba(201, 176, 103, 0.25);
-  background: radial-gradient(circle at 50% 40%, #2a2a2a 0%, #1a1a1a 70%);
+  border: 2px solid rgba(201, 176, 103, 0.35);
+  background: #f2f2f2;
 }
 
 /* ── Info block ── */
@@ -283,6 +347,61 @@ body {
   color: var(--gold);
   letter-spacing: -0.02em;
   line-height: 1.15;
+}
+
+.slide__price-prefix {
+  font-size: 0.68em;
+  font-weight: 500;
+  letter-spacing: 0;
+  margin-right: 0.08em;
+  vertical-align: baseline;
+}
+
+.slide__priceBox {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.slide__priceWrap {
+  position: relative;
+  display: inline-block;
+}
+
+.slide__price--old {
+  position: relative;
+  display: inline-block;
+}
+
+.slide__strike {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 3px;
+  background: currentColor;
+  transform: rotate(-18deg) translateY(-50%);
+  border-radius: 2px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.slide__discount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(201, 176, 103, 0.95);
+  color: #0a0a0a;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  padding: 5px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+  align-self: center;
 }
 
 .slide__desc {
@@ -405,7 +524,7 @@ body {
   transform: translateX(-50%);
   width: min(100vw, calc(100vh * 9 / 16));
   height: 3px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.08);
   z-index: 10;
 }
 

@@ -14,12 +14,22 @@
 
 Или из корня репозитория: `python -m http.server 8080` → http://localhost:8080/board.html
 
+## White Studio
+
+Если нужно заново привести фото к белому студийному фону:
+
+```powershell
+python .\scripts\white-bg-menu-images.py --in-place
+python .\scripts\compress-menu-images.py
+```
+
 ## Содержимое
 
 - `board.html` — карусель
 - `data/drinks.json`, `data/food.json` — карточки меню
 - `assets/css/menu.css`, `assets/images/` — стили и фото
 - `docs/` — настройка дисплея и workflow
+- `scripts/white-bg-menu-images.py` — пакетная выбелка фото
 
 ## Не публикуется
 

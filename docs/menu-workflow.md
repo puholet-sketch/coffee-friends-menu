@@ -2,7 +2,7 @@
 
 ## 1. Заполнить каталог напитков
 
-Файл: `menu/data/drinks.json`
+Файл: `data/drinks.json`
 
 Для каждой позиции:
 
@@ -17,7 +17,7 @@
 ## 2. Положить фото
 
 ```
-menu/assets/images/drinks/
+assets/images/drinks/
   mango-matcha.jpg
   latte.jpg
   ...
@@ -27,7 +27,7 @@ menu/assets/images/drinks/
 
 ## 3. Просмотр в браузере
 
-Откройте `menu/board.html` в Chrome/Edge:
+Откройте `board.html` в Chrome/Edge:
 
 - Слайды листаются автоматически (настраивается в JSON: `settings.slideDurationSec`).
 - F11 — полноэкранный режим для записи.
@@ -41,7 +41,7 @@ menu/assets/images/drinks/
 3. Или **OBS Studio** — захват окна, 1080p, 30 fps.
 4. Обрезать в **CapCut** / Clipchamp до нужной длины, экспорт **MP4 H.264**.
 
-**Длительность:** 1 слайд ≈ 5–7 сек → 10 напитков ≈ 60–70 сек ролика.
+**Длительность:** 1 слайд ≈ 3.5–5 сек → 10 напитков ≈ 40–55 сек ролика.
 
 ## 5. Залить на флешку
 

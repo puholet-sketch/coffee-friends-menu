@@ -20,6 +20,9 @@
   </div>
 
   <script>
+    const ASSET_VER = '20260812';
+    const PRELOAD_RADIUS = 2;
+
     const TAG_LABELS = {
       cold: 'холодный',
       hot: 'горячий',
@@ -54,7 +57,7 @@
       } catch (e) {
         throw new Error('Failed to fetch — сервер не отвечает или открыт не тот URL.\nПроверьте: http://localhost:8080/board.html');
       }
-      if (!drinksRes.ok) throw new Error('Не найден data/drinks.json — запустите сервер из папки menu');
+      if (!drinksRes.ok) throw new Error('Не найден data/drinks.json — запустите сервер из корня репозитория');
       const drinks = await drinksRes.json();
       const food = foodRes.ok ? await foodRes.json() : { categories: [] };
       return { drinks, food };
@@ -73,18 +76,38 @@
       return slide;
     }
 
-    function formatMeta(item) {
+    function formatMeta(item, opts = {}) {
       const volume = (item.volume || '').trim();
       const price = (item.price || '').trim();
       const volumeOnlyPrice = /^(от\s+)?\d[\d\s]*\s*₽$/i.test(volume);
+      const discountPercent = opts.discountPercent || null;
+
+      function formatPriceText(priceText) {
+        return priceText.replace(/^от\s+/i, '<span class="slide__price-prefix">от</span> ');
+      }
 
       let html = '';
 
-      // Volume with size tiers (250 мл — 180 ₽ · …): muted lines + gold «от»
+      function renderPrice(priceText) {
+        if (!discountPercent) {
+          return `<p class="slide__price">${formatPriceText(priceText)}</p>`;
+        }
+
+        return `
+          <div class="slide__priceBox">
+            <span class="slide__priceWrap">
+              <p class="slide__price slide__price--old">${formatPriceText(priceText)}</p>
+              <span class="slide__strike" aria-hidden="true"></span>
+            </span>
+            <span class="slide__discount">${discountPercent}% скидка</span>
+          </div>
+        `;
+      }
+
+      // Volume with size tiers is too noisy for storefront slides:
+      // keep only the minimal gold price and hide the per-size list.
       if (volume && /₽/.test(volume) && !volumeOnlyPrice) {
-        const parts = volume.split(/\s*·\s*/).map(s => s.trim()).filter(Boolean);
-        html += `<p class="slide__volume">${parts.map(p => `<span class="slide__volume-line">${p}</span>`).join('')}</p>`;
-        if (price) html += `<p class="slide__price">${price}</p>`;
+        if (price) html += renderPrice(price);
         return html;
       }
 
@@ -93,9 +116,9 @@
         html += `<p class="slide__volume">${volume}</p>`;
       }
       if (price) {
-        html += `<p class="slide__price">${price}</p>`;
+        html += renderPrice(price);
       } else if (volumeOnlyPrice && volume) {
-        html += `<p class="slide__price">${volume}</p>`;
+        html += renderPrice(volume);
       }
       return html;
     }
@@ -111,6 +134,28 @@
         </div>`;
     }
 
+    function accentClassFor(item, categoryTitle, kind = 'drink') {
+      const id = String(item.id || '').toLowerCase();
+      const name = String(item.name || '').toLowerCase();
+      const desc = String(item.description || '').toLowerCase();
+      const tags = Array.isArray(item.tags) ? item.tags.map(String) : [];
+      const text = `${id} ${name} ${desc} ${categoryTitle || ''}`.toLowerCase();
+
+      if (kind === 'food') {
+        if (/салат|salat|овощ|broccoli|chiabatta|sendvich|roll|ролл/.test(text)) return 'accent-fresh';
+        if (/круас|печенье|батончик|сочник|трубоч|ириск|орех/.test(text)) return 'accent-bakery';
+        return 'accent-warm';
+      }
+
+      if (tags.includes('matcha') || /matcha|матча/.test(text)) return 'accent-matcha';
+      if (/лимонад|апельсин|orange|fresh|фреш|tonik|тоник|citrus|lemon/.test(text)) return 'accent-citrus';
+      if (/клубник|малин|ягод|pink|red/.test(text)) return 'accent-berry';
+      if (/айс|cold|iced|глясе|frappuccino|милкшейк|лед|ice/.test(text) || tags.includes('cold')) return 'accent-ice';
+      if (/шоколад|мокко|какао|cocoa|mocha/.test(text)) return 'accent-cocoa';
+      if (/раф|капуч|латте|эспрессо|americano|coffee|кофе/.test(text) || tags.includes('hot')) return 'accent-coffee';
+      return 'accent-warm';
+    }
+
     function createItemSlide(item, categoryTitle, brand, kind = 'drink') {
       const slide = document.createElement('article');
       slide.className = 'slide';
@@ -118,9 +163,17 @@
         slide.classList.add('slide--compact');
       }
 
+      const discountPercent =
+        categoryTitle === 'Холодный кофе' || item.id === 'matcha-classic'
+          ? 20
+          : null;
+
       const tagsHtml = (item.tags || [])
         .map(t => `<span class="tag">${TAG_LABELS[t] || t}</span>`)
         .join('');
+
+      const safeName = String(item.name || '').replace(/"/g, '&quot;');
+      const accentClass = accentClassFor(item, categoryTitle, kind);
 
       slide.innerHTML = `
         <header class="slide__header">
@@ -130,32 +183,47 @@
           </div>
           <span class="category-badge">${categoryTitle}</span>
         </header>
-        <div class="slide__photo" data-image="${item.image}">
+        <div class="slide__photo ${accentClass}" data-image="${item.image}" data-alt="${safeName}">
           ${placeholderHtml(kind)}
         </div>
         <div class="slide__info">
           <h2 class="slide__name">${item.name}</h2>
           <div class="slide__meta">
-            ${formatMeta(item)}
+            ${formatMeta(item, { discountPercent })}
           </div>
           <p class="slide__desc">${item.description || ''}</p>
           ${tagsHtml ? `<div class="slide__tags">${tagsHtml}</div>` : ''}
         </div>
       `;
 
-      const photoWrap = slide.querySelector('.slide__photo');
+      return slide;
+    }
+
+    function loadSlideImage(slide) {
+      const photoWrap = slide && slide.querySelector('.slide__photo');
+      if (!photoWrap || photoWrap.dataset.loaded === '1' || !photoWrap.dataset.image) return;
+
+      photoWrap.dataset.loaded = '1';
       const img = new Image();
-      img.alt = item.name;
+      img.alt = photoWrap.dataset.alt || '';
+      img.decoding = 'async';
       img.onload = () => {
         photoWrap.innerHTML = '';
         photoWrap.appendChild(img);
       };
       img.onerror = () => {
+        photoWrap.dataset.loaded = '0';
         photoWrap.classList.add('slide__photo--placeholder');
       };
-      img.src = item.image + '?v=' + Date.now();
+      img.src = photoWrap.dataset.image + '?v=' + ASSET_VER;
+    }
 
-      return slide;
+    function preloadAround(slides, index, radius = PRELOAD_RADIUS) {
+      const n = slides.length;
+      for (let d = 0; d <= radius; d++) {
+        loadSlideImage(slides[(index + d) % n]);
+        if (d > 0) loadSlideImage(slides[(index - d + n) % n]);
+      }
     }
 
     function flattenCategories(menu, itemKey = 'drinks') {
@@ -190,26 +258,41 @@
     }
 
     function runSlideshow(slides, durationSec) {
-      const progress = document.getElementById('progress');
+      const bar = document.getElementById('progress');
       let index = 0;
+      let timer = null;
 
       function show(i) {
         slides.forEach((s, j) => s.classList.toggle('slide--active', j === i));
-        progress.style.transition = 'none';
-        progress.style.width = '0%';
-        progress.parentElement.querySelector('.board__progress-bar').style.width = '0%';
+        preloadAround(slides, i);
+
+        bar.style.transition = 'none';
+        bar.style.width = '0%';
         requestAnimationFrame(() => {
-          const bar = progress.parentElement.querySelector('.board__progress-bar');
-          bar.style.transition = `width ${durationSec}s linear`;
-          bar.style.width = '100%';
+          requestAnimationFrame(() => {
+            bar.style.transition = `width ${durationSec}s linear`;
+            bar.style.width = '100%';
+          });
         });
       }
 
-      show(0);
-      setInterval(() => {
+      function tick() {
         index = (index + 1) % slides.length;
         show(index);
-      }, durationSec * 1000);
+      }
+
+      show(0);
+      timer = setInterval(tick, durationSec * 1000);
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          clearInterval(timer);
+          timer = null;
+        } else if (!timer) {
+          show(index);
+          timer = setInterval(tick, durationSec * 1000);
+        }
+      });
     }
 
     async function init() {
@@ -229,9 +312,9 @@
         }
 
         allSlides.forEach(s => frame.appendChild(s));
-        runSlideshow(allSlides, drinks.settings.slideDurationSec || 5);
+        runSlideshow(allSlides, drinks.settings.slideDurationSec || 3.5);
       } catch (err) {
-        document.body.innerHTML = `<pre style="color:#c9b067;padding:2rem;font-family:monospace">${err.message}\n\nЗапуск:\ncd d:\\projects\\MarketingCofe\\menu\npython -m http.server 8080\n\n→ http://localhost:8080/board.html</pre>`;
+        document.body.innerHTML = `<pre style="color:#c9b067;padding:2rem;font-family:monospace">${err.message}\n\nЗапуск:\ncd d:\\projects\\coffee-friends-menu-sync\npython -m http.server 8080\n\n→ http://localhost:8080/board.html</pre>`;
       }
     }
 

@@ -6,8 +6,9 @@
 
 1. Отредактируйте `data/drinks.json`
 2. Добавьте фото в `assets/images/drinks/`
-3. Откройте `board.html` в браузере (Chrome / Edge)
-4. F11 — полный экран → запишите ролик (Win+G или OBS)
+3. Для white-studio вида при необходимости прогоните `scripts/white-bg-menu-images.py --in-place`, затем `scripts/compress-menu-images.py`
+4. Откройте `board.html` в браузере (Chrome / Edge)
+5. F11 — полный экран → запишите ролик (Win+G или OBS)
 
 Подробнее: `../docs/menu-workflow.md` и `../docs/display-setup.md`.
 

@@ -6,7 +6,7 @@
     "accentGold": "Friends"
   },
   "settings": {
-    "slideDurationSec": 5,
+    "slideDurationSec": 3.5,
     "orientation": "portrait",
     "aspectWidth": 9,
     "aspectHeight": 16,
