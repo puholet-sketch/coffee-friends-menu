@@ -20,7 +20,7 @@
   </div>
 
   <script>
-    const ASSET_VER = '20260812-revert';
+    const ASSET_VER = '20260812-interim';
     const PRELOAD_RADIUS = 2;
 
     const TAG_LABELS = {
@@ -57,7 +57,7 @@
       } catch (e) {
         throw new Error('Failed to fetch — сервер не отвечает или открыт не тот URL.\nПроверьте: http://localhost:8080/board.html');
       }
-      if (!drinksRes.ok) throw new Error('Не найден data/drinks.json — запустите сервер из корня репозитория');
+      if (!drinksRes.ok) throw new Error('Не найден data/drinks.json — запустите сервер из папки menu');
       const drinks = await drinksRes.json();
       const food = foodRes.ok ? await foodRes.json() : { categories: [] };
       return { drinks, food };
@@ -314,7 +314,7 @@
         allSlides.forEach(s => frame.appendChild(s));
         runSlideshow(allSlides, drinks.settings.slideDurationSec || 3.5);
       } catch (err) {
-        document.body.innerHTML = `<pre style="color:#c9b067;padding:2rem;font-family:monospace">${err.message}\n\nЗапуск:\ncd d:\\projects\\coffee-friends-menu-sync\npython -m http.server 8080\n\n→ http://localhost:8080/board.html</pre>`;
+        document.body.innerHTML = `<pre style="color:#c9b067;padding:2rem;font-family:monospace">${err.message}\n\nЗапуск:\ncd d:\\projects\\MarketingCofe\\menu\npython -m http.server 8080\n\n→ http://localhost:8080/board.html</pre>`;
       }
     }
 
