@@ -75,6 +75,7 @@
           "name": "Манго Чили Матча",
           "volume": "400 мл — 380 ₽",
           "price": "380 ₽",
+          "new": true,
           "description": "матча, манго и лёгкий чили на молоке",
           "image": "assets/images/drinks/matcha-mango-chili.jpg",
           "tags": [
@@ -88,6 +89,7 @@
           "name": "Вишня Гранат Мокко",
           "volume": "400 мл — 420 ₽",
           "price": "420 ₽",
+          "new": true,
           "description": "какао, вишня и гранат со сливками",
           "image": "assets/images/drinks/cherry-pomegranate-mocha.jpg",
           "tags": [
@@ -100,6 +102,7 @@
           "name": "Клубника Базилик Матча",
           "volume": "350 мл — 380 ₽",
           "price": "380 ₽",
+          "new": true,
           "description": "холодная матча с клубникой и базиликом",
           "image": "assets/images/drinks/matcha-strawberry-basil.jpg",
           "tags": [
@@ -113,6 +116,7 @@
           "name": "Лаванда Хани Раф Айс",
           "volume": "350 мл — 420 ₽",
           "price": "420 ₽",
+          "new": true,
           "description": "айс-раф с лавандой и мёдом",
           "image": "assets/images/drinks/lavender-honey-raf-iced.jpg",
           "tags": [
@@ -236,6 +240,7 @@
           "name": "Глясе Шоколадный",
           "volume": "350 мл — 320 ₽",
           "price": "320 ₽",
+          "new": true,
           "description": "молоко, мороженое и шоколадный топинг",
           "image": "assets/images/drinks/glyase.jpg",
           "tags": [
@@ -283,6 +288,7 @@
           "name": "Персик Тоник Эспрессо",
           "volume": "350 мл — 390 ₽",
           "price": "390 ₽",
+          "new": true,
           "description": "эспрессо, персик и игристая газировка",
           "image": "assets/images/drinks/peach-tonic-espresso.jpg",
           "tags": [
@@ -294,6 +300,7 @@
           "name": "Малина Сливки Фраппе",
           "volume": "400 мл — 400 ₽",
           "price": "400 ₽",
+          "new": true,
           "description": "взбитый кофе с малиной и сливками",
           "image": "assets/images/drinks/raspberry-cream-frappe.jpg",
           "tags": [
@@ -305,6 +312,7 @@
           "name": "Юдзу Сода Кофе",
           "volume": "350 мл — 380 ₽",
           "price": "380 ₽",
+          "new": true,
           "description": "цитрусовая сода с эспрессо и щепоткой соли",
           "image": "assets/images/drinks/yuzu-soda-coffee.jpg",
           "tags": [
@@ -342,6 +350,7 @@
           "name": "Арбузный Латте",
           "volume": "350 мл — 360 ₽",
           "price": "360 ₽",
+          "new": true,
           "description": "айс-латте с арбузным сиропом и щепоткой соли",
           "image": "assets/images/drinks/watermelon-latte.jpg",
           "tags": [
@@ -354,6 +363,7 @@
           "name": "Арбуз Мята Латте",
           "volume": "350 мл — 380 ₽",
           "price": "380 ₽",
+          "new": true,
           "description": "арбузный айс-латте со свежей мятой",
           "image": "assets/images/drinks/watermelon-mint-latte.jpg",
           "tags": [
@@ -366,6 +376,7 @@
           "name": "Кокос Карамель Айс Латте",
           "volume": "350 мл — 370 ₽",
           "price": "370 ₽",
+          "new": true,
           "description": "айс-латте с кокосом и карамелью",
           "image": "assets/images/drinks/coconut-caramel-iced-latte.jpg",
           "tags": [

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260812-plastic-cup">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260813-new-badge">
 </head>
 <body>
   <div class="board" id="board">
@@ -20,7 +20,7 @@
   </div>
 
   <script>
-    const ASSET_VER = '20260813-seasonal';
+    const ASSET_VER = '20260813-new-badge';
     const MENU_DISCOUNT_PERCENT = 20;
     const PRELOAD_RADIUS = 2;
 
@@ -157,6 +157,15 @@
       return 'accent-warm';
     }
 
+    function isNewItem(item) {
+      return item.new === true;
+    }
+
+    function newBadgeHtml(variant = 'inline') {
+      const cls = variant === 'flag' ? 'slide__newFlag' : 'slide__new';
+      return `<span class="${cls}"><span>Новинка!</span></span>`;
+    }
+
     function createItemSlide(item, categoryTitle, brand, kind = 'drink') {
       const slide = document.createElement('article');
       slide.className = 'slide';
@@ -165,6 +174,7 @@
       }
 
       const discountPercent = MENU_DISCOUNT_PERCENT;
+      const isNew = isNewItem(item);
 
       const tagsHtml = (item.tags || [])
         .map(t => `<span class="tag">${TAG_LABELS[t] || t}</span>`)
@@ -172,6 +182,7 @@
 
       const safeName = String(item.name || '').replace(/"/g, '&quot;');
       const accentClass = accentClassFor(item, categoryTitle, kind);
+      const photoNewClass = isNew ? ' slide__photo--hasNew' : '';
 
       slide.innerHTML = `
         <header class="slide__header">
@@ -181,13 +192,17 @@
           </div>
           <span class="category-badge">${categoryTitle}</span>
         </header>
-        <div class="slide__photo ${accentClass}" data-image="${item.image}" data-alt="${safeName}">
+        <div class="slide__photo ${accentClass}${photoNewClass}" data-image="${item.image}" data-alt="${safeName}">
+          ${isNew ? newBadgeHtml('flag') : ''}
           ${placeholderHtml(kind)}
         </div>
         <div class="slide__info">
           <h2 class="slide__name">${item.name}</h2>
           <div class="slide__meta">
-            ${formatMeta(item, { discountPercent })}
+            <div class="slide__promoRow">
+              ${isNew ? newBadgeHtml('inline') : ''}
+              ${formatMeta(item, { discountPercent })}
+            </div>
           </div>
           <p class="slide__desc">${item.description || ''}</p>
           ${tagsHtml ? `<div class="slide__tags">${tagsHtml}</div>` : ''}
