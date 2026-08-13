@@ -296,18 +296,6 @@
           ]
         },
         {
-          "id": "raspberry-cream-frappe",
-          "name": "Малина Сливки Фраппе",
-          "volume": "400 мл — 400 ₽",
-          "price": "400 ₽",
-          "new": true,
-          "description": "взбитый кофе с малиной и сливками",
-          "image": "assets/images/drinks/raspberry-cream-frappe.jpg",
-          "tags": [
-            "cold"
-          ]
-        },
-        {
           "id": "yuzu-soda-coffee",
           "name": "Юдзу Сода Кофе",
           "volume": "350 мл — 380 ₽",
