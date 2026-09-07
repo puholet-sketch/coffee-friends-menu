@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260907-orient-fix">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260907-caption-xl">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,7 +27,7 @@
   </div>
 
   <script>
-    const ASSET_VER = '20260907-orient-fix';
+    const ASSET_VER = '20260907-caption-xl';
     const MENU_DISCOUNT_PERCENT = 20;
     const PRELOAD_RADIUS = 2;
     const ROTATE_KEY = 'cf-menu-rotate';
@@ -178,9 +178,6 @@
     function createItemSlide(item, categoryTitle, brand, kind = 'drink') {
       const slide = document.createElement('article');
       slide.className = 'slide';
-      if (item.name && item.name.length > 22) {
-        slide.classList.add('slide--compact');
-      }
 
       const discountPercent = MENU_DISCOUNT_PERCENT;
       const isNew = isNewItem(item);
@@ -316,12 +313,43 @@
       const cur = document.documentElement.getAttribute('data-rotate') || 'off';
       const next = ROTATE_MODES[(ROTATE_MODES.indexOf(cur) + 1) % ROTATE_MODES.length];
       setRotateMode(next);
+      requestAnimationFrame(() => {
+        const active = document.querySelector('.slide--active');
+        if (active) fitSlideCaptions(active);
+      });
     }
 
     function initOrientControl() {
       setRotateMode(getRotateMode());
       const btn = document.getElementById('orientBtn');
       if (btn) btn.addEventListener('click', cycleRotateMode);
+    }
+
+    function fitSingleLine(el, maxPx, minPx) {
+      if (!el) return;
+      el.style.whiteSpace = 'nowrap';
+      el.style.fontSize = '';
+      const computed = window.getComputedStyle(el);
+      let size = parseFloat(computed.fontSize) || maxPx;
+      if (size > maxPx) size = maxPx;
+      el.style.fontSize = size + 'px';
+      let guard = 80;
+      while (guard-- > 0 && size > minPx && el.scrollWidth > el.clientWidth + 1) {
+        size -= 1;
+        el.style.fontSize = size + 'px';
+      }
+    }
+
+    function fitSlideCaptions(slide) {
+      if (!slide || slide.classList.contains('slide--intro')) return;
+      const name = slide.querySelector('.slide__name');
+      const desc = slide.querySelector('.slide__desc');
+      const frame = document.getElementById('frame');
+      const frameH = (frame && frame.clientHeight) || window.innerHeight;
+      const nameMax = Math.round(Math.min(64, Math.max(30, frameH * 0.056)));
+      const descMax = Math.round(Math.min(24, Math.max(14, frameH * 0.0235)));
+      fitSingleLine(name, nameMax, 18);
+      fitSingleLine(desc, descMax, 12);
     }
 
     function runSlideshow(slides, durationSec) {
@@ -332,6 +360,7 @@
       function show(i) {
         slides.forEach((s, j) => s.classList.toggle('slide--active', j === i));
         preloadAround(slides, i);
+        requestAnimationFrame(() => fitSlideCaptions(slides[i]));
 
         bar.style.transition = 'none';
         bar.style.width = '0%';
@@ -350,6 +379,8 @@
 
       show(0);
       timer = setInterval(tick, durationSec * 1000);
+
+      window.addEventListener('resize', () => fitSlideCaptions(slides[index]));
 
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) {

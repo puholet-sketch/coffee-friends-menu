@@ -16,9 +16,11 @@
   --font-display: "Unbounded", "Montserrat", system-ui, sans-serif;
   --font-body: "Onest", "Montserrat", system-ui, sans-serif;
 
-  --slide-pad-x: clamp(18px, 4vw, 36px);
-  --slide-pad-top: clamp(18px, 3vh, 32px);
-  --slide-pad-bottom: clamp(22px, 3.5vh, 40px);
+  --slide-pad-x: clamp(14px, 3.2vw, 28px);
+  --slide-pad-top: clamp(14px, 2.4vh, 28px);
+  --slide-pad-bottom: clamp(10px, 1.6vh, 18px);
+  /* Physical caption band ≈ 22×5 cm on hung 9:16 panel */
+  --caption-band: 12.78%;
 }
 
 *,
@@ -57,6 +59,8 @@ body {
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.12);
   width: min(100vw, calc(100vh * 9 / 16));
   height: min(100vh, calc(100vw * 16 / 9));
+  container-type: size;
+  container-name: board-frame;
 }
 
 .board__frame[data-orient="landscape"] {
@@ -377,32 +381,38 @@ html[data-rotate="ccw"] .board__progress {
   background: #f2f2f2;
 }
 
-/* ── Info block ── */
+/* ── Info block — physical caption strip ~22×5 cm (≈13% of hung portrait) ── */
 
 .slide__info {
-  padding: clamp(12px, 2vh, 20px) var(--slide-pad-x) var(--slide-pad-bottom);
+  --info-pad-x: var(--slide-pad-x);
+  flex: 0 0 13.2%;
+  height: 13.2%;
+  max-height: 13.2%;
+  min-height: 0;
+  padding: 0.55% var(--info-pad-x) 1.1%;
   display: flex;
   flex-direction: column;
-  gap: clamp(4px, 0.8vh, 8px);
-  flex-shrink: 0;
-  min-height: 0;
-  max-height: 38%;
+  justify-content: center;
+  gap: clamp(2px, 0.35cqh, 8px);
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .slide__name {
   font-family: var(--font-display);
-  font-size: clamp(22px, 4.8vw, 36px);
+  font-size: clamp(30px, 5.6cqh, 64px);
   font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.12;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
   color: var(--text);
-  overflow-wrap: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
   word-break: keep-all;
   hyphens: none;
-  /* Avoid -webkit-box + line-clamp inside flex: Chromium collapses height to 0 */
   display: block;
-  overflow: hidden;
-  max-height: calc(1.12em * 2);
+  max-height: none;
+  width: 100%;
   flex: 0 0 auto;
 }
 
@@ -410,18 +420,14 @@ html[data-rotate="ccw"] .board__progress {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
+  gap: 0;
   min-width: 0;
+  width: 100%;
+  flex: 0 0 auto;
 }
 
 .slide__volume {
-  font-size: clamp(10px, 1.5vw, 13px);
-  font-weight: 500;
-  color: var(--muted);
-  line-height: 1.35;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
+  display: none; /* storefront: keep caption strip for name/price/desc only */
 }
 
 .slide__volume-line {
@@ -434,11 +440,12 @@ html[data-rotate="ccw"] .board__progress {
 
 .slide__price {
   font-family: var(--font-display);
-  font-size: clamp(20px, 3.6vw, 28px);
+  font-size: clamp(22px, 3.8cqh, 42px);
   font-weight: 600;
   color: var(--gold);
   letter-spacing: -0.02em;
-  line-height: 1.15;
+  line-height: 1.05;
+  white-space: nowrap;
 }
 
 .slide__price-prefix {
@@ -452,18 +459,21 @@ html[data-rotate="ccw"] .board__progress {
 .slide__priceBox {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: clamp(8px, 1.2cqw, 14px);
+  flex-wrap: nowrap;
+  max-width: 100%;
 }
 
 .slide__priceWrap {
   position: relative;
   display: inline-block;
+  flex-shrink: 0;
 }
 
 .slide__price--old {
   position: relative;
   display: inline-block;
+  white-space: nowrap;
 }
 
 .slide__strike {
@@ -487,20 +497,24 @@ html[data-rotate="ccw"] .board__progress {
   color: #0a0a0a;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 11px;
+  font-size: clamp(11px, 1.7cqh, 16px);
   line-height: 1;
   letter-spacing: -0.01em;
-  padding: 5px 8px;
+  padding: clamp(4px, 0.55cqh, 7px) clamp(8px, 1cqw, 12px);
   border-radius: 999px;
   white-space: nowrap;
   align-self: center;
+  flex-shrink: 0;
 }
 
 .slide__promoRow {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 8px 10px;
+  gap: clamp(8px, 1.2cqw, 12px);
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .slide__new {
@@ -511,15 +525,16 @@ html[data-rotate="ccw"] .board__progress {
   color: var(--white);
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 11px;
+  font-size: clamp(11px, 1.7cqh, 16px);
   line-height: 1;
   letter-spacing: 0.02em;
-  padding: 5px 10px;
+  padding: clamp(4px, 0.55cqh, 7px) clamp(8px, 1.1cqw, 12px);
   border-radius: 2px;
   white-space: nowrap;
   align-self: center;
   transform: skewX(-6deg);
   box-shadow: 0 2px 8px rgba(192, 0, 0, 0.28);
+  flex-shrink: 0;
 }
 
 .slide__new > span {
@@ -565,22 +580,20 @@ html[data-rotate="ccw"] .board__progress {
 }
 
 .slide__desc {
-  font-size: clamp(12px, 1.9vw, 15px);
-  line-height: 1.4;
+  font-size: clamp(14px, 2.35cqh, 24px);
+  line-height: 1.15;
   color: var(--muted);
   display: block;
   overflow: hidden;
-  max-height: calc(1.4em * 2);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-height: none;
+  width: 100%;
   flex: 0 0 auto;
 }
 
 .slide__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: clamp(2px, 0.5vh, 6px);
-  max-height: 52px;
-  overflow: hidden;
+  display: none; /* free caption strip for larger type from afar */
 }
 
 .tag {
@@ -597,15 +610,7 @@ html[data-rotate="ccw"] .board__progress {
   white-space: nowrap;
 }
 
-/* Long names: tighten info area */
-.slide--compact .slide__name {
-  font-size: clamp(18px, 4vw, 28px);
-  max-height: calc(1.12em * 2);
-}
-
-.slide--compact .slide__desc {
-  max-height: 1.4em;
-}
+/* Compact: no longer shrink captions — JS fits single-line names */
 
 /* ── Intro ── */
 
