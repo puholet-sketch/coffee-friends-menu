@@ -7,18 +7,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260907-tv-rotate">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260907-orient-fix">
 </head>
 <body>
-  <button
-    type="button"
-    class="orient-btn"
-    id="orientBtn"
-    aria-label="Поворот экрана"
-    title="Поворот для вертикального монитора"
-  >⟳</button>
-
   <div class="board" id="board">
+    <button
+      type="button"
+      class="orient-btn"
+      id="orientBtn"
+      aria-label="Поворот экрана"
+      title="Поворот для вертикального монитора"
+    >⟳</button>
     <div class="board__frame" id="frame">
       <!-- slides injected by JS -->
     </div>
@@ -28,7 +27,7 @@
   </div>
 
   <script>
-    const ASSET_VER = '20260907-tv-rotate';
+    const ASSET_VER = '20260907-orient-fix';
     const MENU_DISCOUNT_PERCENT = 20;
     const PRELOAD_RADIUS = 2;
     const ROTATE_KEY = 'cf-menu-rotate';
