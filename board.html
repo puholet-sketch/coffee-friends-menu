@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260907-caption-xl">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260907-caption-fix">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,7 +27,7 @@
   </div>
 
   <script>
-    const ASSET_VER = '20260907-caption-xl';
+    const ASSET_VER = '20260907-caption-fix';
     const MENU_DISCOUNT_PERCENT = 20;
     const PRELOAD_RADIUS = 2;
     const ROTATE_KEY = 'cf-menu-rotate';
@@ -326,30 +326,57 @@
     }
 
     function fitSingleLine(el, maxPx, minPx) {
-      if (!el) return;
+      if (!el) return maxPx;
       el.style.whiteSpace = 'nowrap';
       el.style.fontSize = '';
       const computed = window.getComputedStyle(el);
       let size = parseFloat(computed.fontSize) || maxPx;
       if (size > maxPx) size = maxPx;
       el.style.fontSize = size + 'px';
-      let guard = 80;
+      let guard = 100;
       while (guard-- > 0 && size > minPx && el.scrollWidth > el.clientWidth + 1) {
         size -= 1;
         el.style.fontSize = size + 'px';
       }
+      return size;
+    }
+
+    function shrinkFont(el, minPx) {
+      if (!el) return;
+      let size = parseFloat(el.style.fontSize) || parseFloat(window.getComputedStyle(el).fontSize);
+      if (!size || size <= minPx) return;
+      el.style.fontSize = (size - 1) + 'px';
     }
 
     function fitSlideCaptions(slide) {
       if (!slide || slide.classList.contains('slide--intro')) return;
+      const info = slide.querySelector('.slide__info');
       const name = slide.querySelector('.slide__name');
       const desc = slide.querySelector('.slide__desc');
+      const price = slide.querySelector('.slide__price');
+      if (!info) return;
+
       const frame = document.getElementById('frame');
       const frameH = (frame && frame.clientHeight) || window.innerHeight;
-      const nameMax = Math.round(Math.min(64, Math.max(30, frameH * 0.056)));
-      const descMax = Math.round(Math.min(24, Math.max(14, frameH * 0.0235)));
+      const nameMax = Math.round(Math.min(44, Math.max(24, frameH * 0.038)));
+      const priceMax = Math.round(Math.min(32, Math.max(18, frameH * 0.028)));
+      const descMax = Math.round(Math.min(18, Math.max(12, frameH * 0.017)));
+
+      [name, desc, price].forEach((el) => { if (el) el.style.fontSize = ''; });
+      if (price) price.style.fontSize = priceMax + 'px';
       fitSingleLine(name, nameMax, 18);
-      fitSingleLine(desc, descMax, 12);
+      fitSingleLine(desc, descMax, 11);
+      fitSingleLine(price, priceMax, 16);
+
+      let guard = 60;
+      while (guard-- > 0 && info.scrollHeight > info.clientHeight + 1) {
+        shrinkFont(name, 18);
+        shrinkFont(desc, 11);
+        shrinkFont(price, 16);
+        if (name) fitSingleLine(name, parseFloat(name.style.fontSize) || 18, 18);
+        if (desc) fitSingleLine(desc, parseFloat(desc.style.fontSize) || 11, 11);
+        if (price) fitSingleLine(price, parseFloat(price.style.fontSize) || 16, 16);
+      }
     }
 
     function runSlideshow(slides, durationSec) {

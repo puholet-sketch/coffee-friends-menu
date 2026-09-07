@@ -113,31 +113,28 @@ html[data-rotate="ccw"] .board__progress {
   transform: none;
 }
 
-/* Mini rotate control — inside board so it rotates with content,
-   bottom-right: opposite brand mark, above progress bar */
+/* Mini rotate — bottom-right of board, in the slide safe zone */
 .orient-btn {
   position: absolute;
   top: auto;
-  right: 12px;
-  bottom: 14px;
+  right: 10px;
+  bottom: 8px;
   left: auto;
   z-index: 1000;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   color: #1a1a1a;
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  opacity: 0.5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  opacity: 0.45;
   transition: opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
@@ -166,7 +163,8 @@ html[data-rotate="ccw"] .board__progress {
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  /* header | photo | caption strip (~5cm) | safe zone for progress/btn */
+  grid-template-rows: auto minmax(0, 1fr) minmax(0, 15%) 36px;
   opacity: 0;
   transform: translateY(12px);
   transition: opacity 0.55s ease, transform 0.55s ease;
@@ -381,29 +379,29 @@ html[data-rotate="ccw"] .board__progress {
   background: #f2f2f2;
 }
 
-/* ── Info block — physical caption strip ~22×5 cm (≈13% of hung portrait) ── */
+/* ── Info block — physical caption strip ~22×5 cm, must fully fit ── */
 
 .slide__info {
-  --info-pad-x: var(--slide-pad-x);
-  flex: 0 0 13.2%;
-  height: 13.2%;
-  max-height: 13.2%;
+  grid-row: 3;
   min-height: 0;
-  padding: 0.55% var(--info-pad-x) 1.1%;
+  max-height: 100%;
+  height: 100%;
+  padding: 6px var(--slide-pad-x) 4px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: clamp(2px, 0.35cqh, 8px);
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 4px;
   overflow: hidden;
   box-sizing: border-box;
 }
 
 .slide__name {
   font-family: var(--font-display);
-  font-size: clamp(30px, 5.6cqh, 64px);
+  font-size: clamp(26px, 3.8cqh, 44px);
   font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.02;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
@@ -411,7 +409,6 @@ html[data-rotate="ccw"] .board__progress {
   word-break: keep-all;
   hyphens: none;
   display: block;
-  max-height: none;
   width: 100%;
   flex: 0 0 auto;
 }
@@ -427,7 +424,7 @@ html[data-rotate="ccw"] .board__progress {
 }
 
 .slide__volume {
-  display: none; /* storefront: keep caption strip for name/price/desc only */
+  display: none;
 }
 
 .slide__volume-line {
@@ -440,11 +437,11 @@ html[data-rotate="ccw"] .board__progress {
 
 .slide__price {
   font-family: var(--font-display);
-  font-size: clamp(22px, 3.8cqh, 42px);
+  font-size: clamp(20px, 2.8cqh, 32px);
   font-weight: 600;
   color: var(--gold);
   letter-spacing: -0.02em;
-  line-height: 1.05;
+  line-height: 1.1;
   white-space: nowrap;
 }
 
@@ -459,7 +456,7 @@ html[data-rotate="ccw"] .board__progress {
 .slide__priceBox {
   display: inline-flex;
   align-items: center;
-  gap: clamp(8px, 1.2cqw, 14px);
+  gap: 8px;
   flex-wrap: nowrap;
   max-width: 100%;
 }
@@ -481,9 +478,9 @@ html[data-rotate="ccw"] .board__progress {
   left: 0;
   top: 50%;
   width: 100%;
-  height: 3px;
+  height: 2px;
   background: currentColor;
-  transform: rotate(-18deg) translateY(-50%);
+  transform: rotate(-16deg) translateY(-50%);
   border-radius: 2px;
   z-index: 1;
   pointer-events: none;
@@ -497,10 +494,10 @@ html[data-rotate="ccw"] .board__progress {
   color: #0a0a0a;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(11px, 1.7cqh, 16px);
+  font-size: clamp(10px, 1.35cqh, 13px);
   line-height: 1;
   letter-spacing: -0.01em;
-  padding: clamp(4px, 0.55cqh, 7px) clamp(8px, 1cqw, 12px);
+  padding: 4px 8px;
   border-radius: 999px;
   white-space: nowrap;
   align-self: center;
@@ -511,7 +508,7 @@ html[data-rotate="ccw"] .board__progress {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
-  gap: clamp(8px, 1.2cqw, 12px);
+  gap: 8px;
   width: 100%;
   min-width: 0;
   overflow: hidden;
@@ -525,10 +522,10 @@ html[data-rotate="ccw"] .board__progress {
   color: var(--white);
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(11px, 1.7cqh, 16px);
+  font-size: clamp(10px, 1.35cqh, 13px);
   line-height: 1;
   letter-spacing: 0.02em;
-  padding: clamp(4px, 0.55cqh, 7px) clamp(8px, 1.1cqw, 12px);
+  padding: 4px 8px;
   border-radius: 2px;
   white-space: nowrap;
   align-self: center;
@@ -580,14 +577,13 @@ html[data-rotate="ccw"] .board__progress {
 }
 
 .slide__desc {
-  font-size: clamp(14px, 2.35cqh, 24px);
-  line-height: 1.15;
+  font-size: clamp(13px, 1.7cqh, 18px);
+  line-height: 1.2;
   color: var(--muted);
   display: block;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  max-height: none;
   width: 100%;
   flex: 0 0 auto;
 }
