@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260907-caption-fix">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260907-caption-max">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,7 +27,7 @@
   </div>
 
   <script>
-    const ASSET_VER = '20260907-caption-fix';
+    const ASSET_VER = '20260907-caption-max';
     const MENU_DISCOUNT_PERCENT = 20;
     const PRELOAD_RADIUS = 2;
     const ROTATE_KEY = 'cf-menu-rotate';
@@ -325,27 +325,62 @@
       if (btn) btn.addEventListener('click', cycleRotateMode);
     }
 
-    function fitSingleLine(el, maxPx, minPx) {
-      if (!el) return maxPx;
+    function fitWidthMax(el, minPx, maxPx) {
+      if (!el || el.clientWidth < 8) return minPx;
       el.style.whiteSpace = 'nowrap';
-      el.style.fontSize = '';
-      const computed = window.getComputedStyle(el);
-      let size = parseFloat(computed.fontSize) || maxPx;
-      if (size > maxPx) size = maxPx;
-      el.style.fontSize = size + 'px';
-      let guard = 100;
-      while (guard-- > 0 && size > minPx && el.scrollWidth > el.clientWidth + 1) {
-        size -= 1;
-        el.style.fontSize = size + 'px';
+      let lo = minPx;
+      let hi = maxPx;
+      let best = minPx;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        el.style.fontSize = mid + 'px';
+        if (el.scrollWidth <= el.clientWidth + 1) {
+          best = mid;
+          lo = mid + 1;
+        } else {
+          hi = mid - 1;
+        }
       }
-      return size;
+      el.style.fontSize = best + 'px';
+      return best;
     }
 
-    function shrinkFont(el, minPx) {
-      if (!el) return;
-      let size = parseFloat(el.style.fontSize) || parseFloat(window.getComputedStyle(el).fontSize);
-      if (!size || size <= minPx) return;
-      el.style.fontSize = (size - 1) + 'px';
+    function syncBadgeSizes(slide, pricePx) {
+      const badgePx = Math.max(11, Math.min(20, Math.round(pricePx * 0.45)));
+      slide.querySelectorAll('.slide__discount, .slide__new').forEach((el) => {
+        el.style.fontSize = badgePx + 'px';
+        el.style.padding = Math.max(4, Math.round(badgePx * 0.35)) + 'px ' +
+          Math.max(8, Math.round(badgePx * 0.7)) + 'px';
+      });
+    }
+
+    function fitPriceInPromo(slide, minPx, maxPx) {
+      const price = slide.querySelector('.slide__price');
+      const promo = slide.querySelector('.slide__promoRow');
+      if (!price || !promo || promo.clientWidth < 8) return minPx;
+
+      let lo = minPx;
+      let hi = maxPx;
+      let best = minPx;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        price.style.fontSize = mid + 'px';
+        syncBadgeSizes(slide, mid);
+        const badges = promo.querySelectorAll('.slide__new, .slide__discount');
+        let badgeW = 0;
+        badges.forEach((b) => { badgeW += b.offsetWidth; });
+        const gaps = 8 * Math.max(1, badges.length);
+        const avail = Math.max(48, promo.clientWidth - badgeW - gaps);
+        if (price.scrollWidth <= avail + 1 && promo.scrollWidth <= promo.clientWidth + 2) {
+          best = mid;
+          lo = mid + 1;
+        } else {
+          hi = mid - 1;
+        }
+      }
+      price.style.fontSize = best + 'px';
+      syncBadgeSizes(slide, best);
+      return best;
     }
 
     function fitSlideCaptions(slide) {
@@ -358,24 +393,63 @@
 
       const frame = document.getElementById('frame');
       const frameH = (frame && frame.clientHeight) || window.innerHeight;
-      const nameMax = Math.round(Math.min(44, Math.max(24, frameH * 0.038)));
-      const priceMax = Math.round(Math.min(32, Math.max(18, frameH * 0.028)));
-      const descMax = Math.round(Math.min(18, Math.max(12, frameH * 0.017)));
+      const infoH = info.clientHeight || Math.round(frameH * 0.15);
 
-      [name, desc, price].forEach((el) => { if (el) el.style.fontSize = ''; });
-      if (price) price.style.fontSize = priceMax + 'px';
-      fitSingleLine(name, nameMax, 18);
-      fitSingleLine(desc, descMax, 11);
-      fitSingleLine(price, priceMax, 16);
+      const nameMax = Math.round(Math.min(78, Math.max(28, infoH * 0.5)));
+      const priceMax = Math.round(Math.min(52, Math.max(20, infoH * 0.32)));
+      const descMax = Math.round(Math.min(30, Math.max(13, infoH * 0.24)));
 
-      let guard = 60;
+      [name, desc, price].forEach((el) => {
+        if (el) el.style.fontSize = '';
+      });
+
+      // 1) Maximize each line horizontally (no wrap)
+      fitWidthMax(name, 20, nameMax);
+      fitPriceInPromo(slide, 16, priceMax);
+      fitWidthMax(desc, 12, descMax);
+
+      // 2) Fill leftover vertical space: name → price → desc
+      let guard = 120;
+      while (guard-- > 0 && info.scrollHeight < info.clientHeight - 2) {
+        let grew = false;
+        const bump = (el, max, refit) => {
+          if (!el) return false;
+          const cur = parseFloat(el.style.fontSize) || 0;
+          if (cur >= max) return false;
+          el.style.fontSize = (cur + 1) + 'px';
+          if (refit) refit();
+          if (el.scrollWidth > el.clientWidth + 1 || info.scrollHeight > info.clientHeight + 1) {
+            el.style.fontSize = cur + 'px';
+            if (refit) refit();
+            return false;
+          }
+          return true;
+        };
+        grew = bump(name, nameMax, null) || grew;
+        if (!grew) {
+          grew = bump(price, priceMax, () => syncBadgeSizes(slide, parseFloat(price.style.fontSize) || 16)) || grew;
+        }
+        if (!grew) grew = bump(desc, descMax, null) || grew;
+        if (!grew) break;
+      }
+
+      // 3) Safety if still overflowing
+      guard = 80;
       while (guard-- > 0 && info.scrollHeight > info.clientHeight + 1) {
-        shrinkFont(name, 18);
-        shrinkFont(desc, 11);
-        shrinkFont(price, 16);
-        if (name) fitSingleLine(name, parseFloat(name.style.fontSize) || 18, 18);
-        if (desc) fitSingleLine(desc, parseFloat(desc.style.fontSize) || 11, 11);
-        if (price) fitSingleLine(price, parseFloat(price.style.fontSize) || 16, 16);
+        const order = [desc, price, name];
+        let shrunk = false;
+        for (const el of order) {
+          if (!el) continue;
+          const cur = parseFloat(el.style.fontSize) || 0;
+          const floor = el === name ? 18 : el === price ? 16 : 11;
+          if (cur <= floor) continue;
+          el.style.fontSize = (cur - 1) + 'px';
+          if (el === name || el === desc) fitWidthMax(el, floor, cur - 1);
+          if (el === price) syncBadgeSizes(slide, cur - 1);
+          shrunk = true;
+          break;
+        }
+        if (!shrunk) break;
       }
     }
 
@@ -387,7 +461,9 @@
       function show(i) {
         slides.forEach((s, j) => s.classList.toggle('slide--active', j === i));
         preloadAround(slides, i);
-        requestAnimationFrame(() => fitSlideCaptions(slides[i]));
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => fitSlideCaptions(slides[i]));
+        });
 
         bar.style.transition = 'none';
         bar.style.width = '0%';
