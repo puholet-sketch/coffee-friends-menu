@@ -7,9 +7,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260813-new-badge">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260907-tv-rotate">
 </head>
 <body>
+  <button
+    type="button"
+    class="orient-btn"
+    id="orientBtn"
+    aria-label="Поворот экрана"
+    title="Поворот для вертикального монитора"
+  >⟳</button>
+
   <div class="board" id="board">
     <div class="board__frame" id="frame">
       <!-- slides injected by JS -->
@@ -20,9 +28,11 @@
   </div>
 
   <script>
-    const ASSET_VER = '20260813-no-frappe';
+    const ASSET_VER = '20260907-tv-rotate';
     const MENU_DISCOUNT_PERCENT = 20;
     const PRELOAD_RADIUS = 2;
+    const ROTATE_KEY = 'cf-menu-rotate';
+    const ROTATE_MODES = ['off', 'cw', 'ccw'];
 
     const TAG_LABELS = {
       cold: 'холодный',
@@ -261,13 +271,58 @@
 
       frame.setAttribute('data-orient', orient);
 
-      if (progress) {
+      if (progress && document.documentElement.getAttribute('data-rotate') === 'off') {
         if (orient === 'landscape') {
           progress.style.width = 'min(100vw, calc(100vh * 16 / 9))';
         } else {
           progress.style.width = 'min(100vw, calc(100vh * 9 / 16))';
         }
+      } else if (progress) {
+        progress.style.width = '';
       }
+    }
+
+    function getRotateMode() {
+      try {
+        const saved = localStorage.getItem(ROTATE_KEY);
+        if (saved && ROTATE_MODES.includes(saved)) return saved;
+      } catch (e) { /* ignore */ }
+      // Android TV / landscape browser + hung portrait monitor
+      return window.innerWidth > window.innerHeight ? 'cw' : 'off';
+    }
+
+    function setRotateMode(mode) {
+      if (!ROTATE_MODES.includes(mode)) mode = 'off';
+      document.documentElement.setAttribute('data-rotate', mode);
+      try { localStorage.setItem(ROTATE_KEY, mode); } catch (e) { /* ignore */ }
+
+      const btn = document.getElementById('orientBtn');
+      if (btn) {
+        btn.dataset.mode = mode;
+        btn.setAttribute('aria-pressed', mode !== 'off' ? 'true' : 'false');
+        btn.title = mode === 'off'
+          ? 'Без поворота'
+          : mode === 'cw'
+            ? 'Поворот 90° (по часовой) — тап сменить'
+            : 'Поворот 90° (против часовой) — тап сменить';
+      }
+
+      const progress = document.querySelector('.board__progress');
+      if (progress) {
+        progress.style.width = mode === 'off' ? progress.style.width : '';
+      }
+    }
+
+    function cycleRotateMode() {
+      const cur = document.documentElement.getAttribute('data-rotate') || 'off';
+      const next = ROTATE_MODES[(ROTATE_MODES.indexOf(cur) + 1) % ROTATE_MODES.length];
+      setRotateMode(next);
+    }
+
+    function initOrientControl() {
+      setRotateMode(getRotateMode());
+      const btn = document.getElementById('orientBtn');
+      if (btn) btn.addEventListener('click', cycleRotateMode);
     }
 
     function runSlideshow(slides, durationSec) {
@@ -310,6 +365,7 @@
 
     async function init() {
       try {
+        initOrientControl();
         const { drinks, food } = await loadMenuData();
         applyFrame(drinks.settings);
 
