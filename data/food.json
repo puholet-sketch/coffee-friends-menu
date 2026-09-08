@@ -9,7 +9,7 @@
           "name": "Круассаны",
           "volume": "свежая выпечка",
           "price": "от 250 ₽",
-          "description": "хрустящие слоёные круассаны — классика кофейни",
+          "description": "слоёный круассан с начинкой — на выбор Sensorica",
           "image": "assets/images/food/kruassany.jpg",
           "tags": [
             "dessert",
@@ -69,7 +69,7 @@
           "name": "Конфеты дабл бабл",
           "volume": "ассортимент",
           "price": "от 70 ₽",
-          "description": "небольшие шоколадные конфеты в виде капелек‑пирамидок, упакованные в крафтовый бумажный пакет с завязкой сверху — дабл бабл в ассортименте",
+          "description": "крафтовые конфеты Double Double в пергаменте с цветной завязкой — ассортимент вкусов",
           "image": "assets/images/food/konfety_dabl_babl.jpg",
           "tags": [
             "dessert"
@@ -86,7 +86,7 @@
           "name": "Сэндвичи",
           "volume": "на выбор начинки",
           "price": "от 300 ₽",
-          "description": "свежий хлеб, сытная начинка — к обеду или перекусу",
+          "description": "тост-сэндвич Sensorica с начинкой на выбор",
           "image": "assets/images/food/sendvichi.jpg",
           "tags": [
             "sandwich",
@@ -98,7 +98,7 @@
           "name": "Чиабатта",
           "volume": "на выбор начинки",
           "price": "от 350 ₽",
-          "description": "хрустящая чиабатта с сочной начинкой",
+          "description": "чиабатта Sensorica с начинкой на выбор",
           "image": "assets/images/food/chiabatta.jpg",
           "tags": [
             "sandwich",
@@ -140,7 +140,7 @@
           "name": "Горячее",
           "volume": "порция",
           "price": "от 370 ₽",
-          "description": "тёплое блюдо на каждый день — сытно и по-домашнему",
+          "description": "горячее Sensorica — шницель, пасты, рис, гречка",
           "image": "assets/images/food/goryachee.jpg",
           "tags": [
             "hot",
@@ -152,7 +152,7 @@
           "name": "Салаты",
           "volume": "порция",
           "price": "от 320 ₽",
-          "description": "свежие салаты с сезонными овощами",
+          "description": "салат Sensorica — тунец, цезарь, греческий и другие",
           "image": "assets/images/food/salaty.jpg",
           "tags": [
             "preorder"
