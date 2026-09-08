@@ -1,0 +1,330 @@
+{
+  "style": "Premium commercial product photo for portrait digital menu board. Pure white seamless background #FFFFFF, soft natural contact shadow, centered hero product filling 70-85% of frame, 35-degree camera angle, crisp studio lighting, side-back light for liquid glow, ultra realistic, appetizing, no text, no logo, no watermark, no hands, minimal tasteful garnish props only where noted. MANDATORY for drinks: clear disposable plastic takeaway coffee-shop cup, NO lid, NO dome lid, NO straw hole cover, open top with drink surface foam fully visible. ICE RULE: ice cubes only for drinks actually served iced (iced latte, espresso tonic, bumble, iced mocha, lemonade, milkshake, frappuccino, coconut caramel iced latte, fresh juice). All other drinks: NO ice, hot drinks show steam.",
+  "rules": {
+    "aspect": "3:4",
+    "background": "#FFFFFF",
+    "drinks_vessel": "clear plastic takeaway cup",
+    "drinks_lid": false,
+    "drinks_open_top": true,
+    "forbidden": [
+      "glass cup",
+      "ceramic mug",
+      "dome lid",
+      "GrabCut white-bg-menu-images.py",
+      "beige studio pack"
+    ],
+    "pipeline": [
+      "GenerateImage 3:4",
+      "scripts/convert-menu-png.py",
+      "optional compress-menu-images.py",
+      "update drinks.json|food.json + menu-image-prompts.json",
+      "bump ASSET_VER",
+      "push coffee-friends-menu + coffee-menu"
+    ],
+    "doc": ".ai/IMAGE_GEN_RULES.md",
+    "ice_allowed": [
+      "iced-latte.jpg",
+      "espresso-tonic.jpg",
+      "bumble-coffee.jpg",
+      "ays_mokko.jpg",
+      "lemonade.jpg",
+      "milksheyk.jpg",
+      "frappuccino.jpg",
+      "coconut-caramel-iced-latte.jpg",
+      "fresh_350_ml.jpg",
+      "fresh_450_ml.jpg"
+    ]
+  },
+  "drinks": [
+    {
+      "file": "matcha-classic.jpg",
+      "prompt": "Hot matcha latte in clear plastic takeaway cup no lid open top, vibrant green matcha with creamy milk swirl visible, tiny matcha powder dusting nearby, subtle steam wisps, white studio"
+    },
+    {
+      "file": "matcha-blue.jpg",
+      "prompt": "Blue butterfly pea matcha latte in clear plastic takeaway cup no lid open top, sky-blue and white creamy layers, NO ice cubes, one fresh blueberry beside cup, white studio"
+    },
+    {
+      "file": "matcha-red.jpg",
+      "prompt": "Iced red raspberry matcha latte in clear plastic takeaway cup no lid open top with ice, pink-red and white layers visible, fresh raspberries beside cup, white studio"
+    },
+    {
+      "file": "matcha-pink.jpg",
+      "prompt": "Strawberry pink matcha latte in clear plastic takeaway cup no lid open top, soft pink and white layers, NO ice cubes, fresh strawberry slice beside cup, white studio"
+    },
+    {
+      "file": "matcha-mango-chili.jpg",
+      "prompt": "Iced mango chili matcha in clear plastic takeaway cup no lid open top with ice, golden mango and green matcha layers visible, mango cube and red chili accent beside cup, white studio"
+    },
+    {
+      "file": "cherry-pomegranate-mocha.jpg",
+      "prompt": "Iced cherry pomegranate mocha in clear plastic takeaway cup no lid open top with ice, chocolate-red layers, whipped cream chocolate drizzle freeze-dried cherry, white studio"
+    },
+    {
+      "file": "matcha-strawberry-basil.jpg",
+      "prompt": "Strawberry basil matcha in clear plastic takeaway cup no lid open top, pink and green layers, NO ice cubes, strawberry and basil accent, white studio"
+    },
+    {
+      "file": "lavender-honey-raf-iced.jpg",
+      "prompt": "Iced lavender honey raf in clear plastic takeaway cup no lid open top with ice, creamy pale lavender foam, lavender sprig honey accent, white studio"
+    },
+    {
+      "file": "peach-tonic-espresso.jpg",
+      "prompt": "Peach tonic espresso in clear plastic takeaway cup no lid open top with ice, sparkling peach soda and espresso layer, peach slice, white studio"
+    },
+    {
+      "file": "raspberry-cream-frappe.jpg",
+      "prompt": "Blended raspberry cream coffee frappe in clear plastic takeaway cup no lid open top, frothy pink cream, raspberries accent, white studio"
+    },
+    {
+      "file": "yuzu-soda-coffee.jpg",
+      "prompt": "Yuzu soda coffee in clear plastic takeaway cup no lid open top with ice, citrus soda and espresso top layer, citrus peel bubbles, white studio"
+    },
+    {
+      "file": "watermelon-latte.jpg",
+      "prompt": "Iced watermelon latte in clear plastic takeaway cup no lid open top with ice, pink-red creamy layers, watermelon wedge accent, white studio"
+    },
+    {
+      "file": "watermelon-mint-latte.jpg",
+      "prompt": "Iced watermelon mint latte in clear plastic takeaway cup no lid open top with ice, pink layers, mint sprig watermelon accent, white studio"
+    },
+    {
+      "file": "coconut-caramel-iced-latte.jpg",
+      "prompt": "Iced coconut caramel latte in clear plastic takeaway cup no lid open top with ice, caramel-beige layers caramel drizzle coconut flakes, white studio"
+    },
+    {
+      "file": "americano.jpg",
+      "prompt": "Hot americano in clear plastic takeaway cup no lid open top, dark coffee with light crema visible, subtle coffee bean scatter and tiny steam, white studio"
+    },
+    {
+      "file": "bumble-coffee.jpg",
+      "prompt": "Layered bumble coffee in clear plastic takeaway cup no lid open top: orange juice bottom espresso middle ice top visible, orange slice accent, white studio"
+    },
+    {
+      "file": "cappuccino.jpg",
+      "prompt": "Hot cappuccino in clear plastic takeaway cup no lid open top with thick silky milk foam visible, light cocoa dust on foam, subtle coffee bean accent, white studio"
+    },
+    {
+      "file": "latte.jpg",
+      "prompt": "Hot latte in clear plastic takeaway cup no lid open top with beautiful latte art heart visible, creamy milk coffee, white studio"
+    },
+    {
+      "file": "mocha.jpg",
+      "prompt": "Hot mocha in clear plastic takeaway cup no lid open top with chocolate drizzle on foam visible, rich brown coffee, small chocolate shard beside cup, white studio"
+    },
+    {
+      "file": "raf.jpg",
+      "prompt": "Hot vanilla raf coffee in clear plastic takeaway cup no lid open top with thick creamy foam visible, vanilla pod accent, white studio"
+    },
+    {
+      "file": "flat-white.jpg",
+      "prompt": "Hot flat white in clear plastic takeaway cup no lid open top with microfoam and small latte art visible, rich espresso tone, white studio"
+    },
+    {
+      "file": "espresso.jpg",
+      "prompt": "Single espresso shot in small clear plastic takeaway cup no lid open top, dark crema visible, two coffee beans beside, white studio"
+    },
+    {
+      "file": "ays_mokko.jpg",
+      "prompt": "Iced mocha in clear plastic takeaway cup no lid open top with ice visible, chocolate and coffee layers, chocolate drizzle, white studio"
+    },
+    {
+      "file": "glyase.jpg",
+      "prompt": "Chocolate iced coffee glace with vanilla ice cream scoop in clear plastic takeaway cup no lid open top, chocolate topping drizzle, white studio"
+    },
+    {
+      "file": "honey-stout.jpg",
+      "prompt": "Iced honey stout coffee in clear plastic takeaway cup no lid open top with creamy foam and ice visible, golden honey drizzle, white studio"
+    },
+    {
+      "file": "milksheyk.jpg",
+      "prompt": "Thick vanilla milkshake in clear plastic takeaway cup no lid open top with whipped cream visible, subtle milk splash, white studio"
+    },
+    {
+      "file": "frappuccino.jpg",
+      "prompt": "Blended frappuccino in clear plastic takeaway cup no lid open top with whipped cream and coffee drizzle visible, ice chips beside cup, white studio"
+    },
+    {
+      "file": "espresso-tonic.jpg",
+      "prompt": "Espresso tonic in clear plastic takeaway cup no lid open top, sparkling clear tonic with ice, dark espresso layer on top visible, orange peel curl and bubbles, white studio"
+    },
+    {
+      "file": "iced-latte.jpg",
+      "prompt": "Iced latte in clear plastic takeaway cup no lid open top with ice cubes visible, creamy coffee layers, white studio"
+    },
+    {
+      "file": "raf-signature.jpg",
+      "prompt": "Signature seasonal raf in clear plastic takeaway cup no lid open top with thick foam visible, caramel and spice accent, white studio"
+    },
+    {
+      "file": "apelsin_imbir.jpg",
+      "prompt": "Hot fruit tea orange ginger in clear plastic takeaway cup no lid open top, amber-orange drink, orange slice and ginger root accent, steam, NO ice, white studio"
+    },
+    {
+      "file": "ganpauder.jpg",
+      "prompt": "Hot green gunpowder tea in clear plastic takeaway cup no lid open top, golden-green liquor visible, loose green tea leaves accent, steam, white studio"
+    },
+    {
+      "file": "glintveyn_b_a.jpg",
+      "prompt": "Non-alcoholic mulled wine in clear plastic takeaway cup no lid open top, deep red drink visible, cinnamon stick star anise and orange slice, steam, white studio"
+    },
+    {
+      "file": "goryachiy_shokolad.jpg",
+      "prompt": "Hot thick chocolate in clear plastic takeaway cup no lid open top with whipped cream visible, chocolate shavings, steam, white studio"
+    },
+    {
+      "file": "grechishnyy_chay.jpg",
+      "prompt": "Hot buckwheat tea in clear plastic takeaway cup no lid open top, amber liquor visible, buckwheat grains accent, steam, white studio"
+    },
+    {
+      "file": "imbirnyy_pryanik.jpg",
+      "prompt": "Hot gingerbread spice fruit tea in clear plastic takeaway cup no lid open top, amber-red drink visible, ginger piece and small cookie accent, steam, white studio"
+    },
+    {
+      "file": "cocoa.jpg",
+      "prompt": "Hot cocoa with milk in clear plastic takeaway cup no lid open top, creamy brown drink visible, mini marshmallows accent, steam, white studio"
+    },
+    {
+      "file": "kakao_bryut.jpg",
+      "prompt": "Dark bitter cocoa in clear plastic takeaway cup no lid open top, intense chocolate brown visible, cocoa powder dusting, steam, white studio"
+    },
+    {
+      "file": "kitayskiy_chay.jpg",
+      "prompt": "Hot Chinese tea in clear plastic takeaway cup no lid open top, light amber liquor visible, dry tea leaves accent, steam, white studio"
+    },
+    {
+      "file": "klubnika_smorodina_450_ml.jpg",
+      "prompt": "Hot strawberry blackcurrant fruit tea in clear plastic takeaway cup no lid open top, ruby red drink, steam, NO ice, fresh strawberry and blackcurrant accents, white studio"
+    },
+    {
+      "file": "malina_imbir.jpg",
+      "prompt": "Hot raspberry ginger tea in clear plastic takeaway cup no lid open top, red-amber drink visible, raspberry and ginger accents, steam, white studio"
+    },
+    {
+      "file": "malina_shipovnik_450_ml.jpg",
+      "prompt": "Hot raspberry rosehip tea in clear plastic takeaway cup no lid open top, rich red drink, steam, NO ice, rosehip and raspberry accents, white studio"
+    },
+    {
+      "file": "molochnyy_ulun.jpg",
+      "prompt": "Hot milk oolong tea in clear plastic takeaway cup no lid open top, golden liquor visible, subtle cream swirl, steam, white studio"
+    },
+    {
+      "file": "oblepiha_imbir.jpg",
+      "prompt": "Hot sea buckthorn ginger tea in clear plastic takeaway cup no lid open top, bright orange drink, steam, NO ice, sea buckthorn berries and ginger accent, white studio"
+    },
+    {
+      "file": "puer.jpg",
+      "prompt": "Hot pu-erh tea in clear plastic takeaway cup no lid open top, deep amber-red liquor visible, pu-erh tea chunk accent, steam, white studio"
+    },
+    {
+      "file": "te_guan_in.jpg",
+      "prompt": "Hot tie guan yin oolong in clear plastic takeaway cup no lid open top, golden-green liquor visible, rolled oolong leaves accent, steam, white studio"
+    },
+    {
+      "file": "travyanoy_chay.jpg",
+      "prompt": "Hot herbal tea in clear plastic takeaway cup no lid open top, light golden drink visible, herbs and chamomile accent, steam, white studio"
+    },
+    {
+      "file": "tseylon.jpg",
+      "prompt": "Hot Ceylon black tea in clear plastic takeaway cup no lid open top, rich amber liquor visible, black tea leaves accent, steam, white studio"
+    },
+    {
+      "file": "chay_v_paketikah.jpg",
+      "prompt": "Hot tea in clear plastic takeaway cup no lid open top with tea bag tag visible, amber tea, steam, white studio"
+    },
+    {
+      "file": "chay_s_zhasminom.jpg",
+      "prompt": "Hot jasmine tea in clear plastic takeaway cup no lid open top, pale golden liquor visible, jasmine flowers accent, steam, white studio"
+    },
+    {
+      "file": "chay_chabrets.jpg",
+      "prompt": "Hot thyme herbal tea in clear plastic takeaway cup no lid open top, golden-green drink visible, fresh thyme sprig, steam, white studio"
+    },
+    {
+      "file": "chay_erl_grey.jpg",
+      "prompt": "Hot earl grey tea in clear plastic takeaway cup no lid open top, amber liquor visible, bergamot slice and black tea leaves, steam, white studio"
+    },
+    {
+      "file": "lemonade.jpg",
+      "prompt": "Homemade lemonade in clear plastic takeaway cup no lid open top with ice visible, bright yellow drink, lemon slice and mint sprig, white studio"
+    },
+    {
+      "file": "fresh_350_ml.jpg",
+      "prompt": "Freshly squeezed orange juice in clear plastic takeaway cup no lid open top with ice visible, vibrant orange color, orange half beside cup, white studio"
+    },
+    {
+      "file": "fresh_450_ml.jpg",
+      "prompt": "Large fresh mixed fruit juice in clear plastic takeaway cup no lid open top with ice visible, orange-red gradient, orange and apple slice accents, white studio"
+    },
+    {
+      "file": "matcha-orange-cedar.jpg",
+      "prompt": "Hot matcha orange cedar latte in clear plastic takeaway cup no lid open top, green matcha with orange citrus glow, cedar sprig and orange zest accent, steam, NO ice, white studio"
+    },
+    {
+      "file": "pine-raf.jpg",
+      "prompt": "Hot coniferous pine raf in clear plastic takeaway cup no lid open top, thick creamy foam with toasted pine nuts on top, pine nuts and tiny pine sprig beside cup, steam, NO ice, white studio"
+    },
+    {
+      "file": "mocaccino.jpg",
+      "prompt": "Hot mocaccino in clear plastic takeaway cup no lid open top, chocolate mocha with milk foam cocoa dust chocolate drizzle, chocolate shards beside cup, steam, NO ice, white studio"
+    }
+  ],
+  "food": [
+    {
+      "file": "kruassany.jpg",
+      "prompt": "Golden flaky croissant on small white plate, buttery layers, crumbs and subtle coffee bean accent, white studio food photography"
+    },
+    {
+      "file": "batonchik.jpg",
+      "prompt": "Homemade cereal energy bar on parchment, nuts and chocolate chips visible, white studio"
+    },
+    {
+      "file": "pechene.jpg",
+      "prompt": "Stack of crumbly cookies on white plate, few chocolate chips, white studio"
+    },
+    {
+      "file": "sochnik.jpg",
+      "prompt": "Russian scone sochnik with cottage cheese filling on white plate, golden pastry, white studio"
+    },
+    {
+      "file": "trubochka_so_sguschenkoy.jpg",
+      "prompt": "Crispy wafer roll tube with condensed milk on white plate, white studio"
+    },
+    {
+      "file": "iriska.jpg",
+      "prompt": "Caramel candy pieces on white plate, golden caramel gloss, white studio"
+    },
+    {
+      "file": "konfety_dabl_babl.jpg",
+      "prompt": "Small chocolate candy pyramids in craft paper bag with tie, assortment, white studio"
+    },
+    {
+      "file": "sendvichi.jpg",
+      "prompt": "Fresh club sandwich triangles on white plate, visible layers of bread lettuce tomato ham cheese, white studio"
+    },
+    {
+      "file": "chiabatta.jpg",
+      "prompt": "Ciabatta sandwich with crispy crust on white plate, fresh filling visible, white studio"
+    },
+    {
+      "file": "rolly.jpg",
+      "prompt": "Lavash roll wrap sliced on white plate, fresh filling cross-section, white studio"
+    },
+    {
+      "file": "zavtraki.jpg",
+      "prompt": "Hearty breakfast plate with scrambled eggs toast and vegetables on white plate, white studio"
+    },
+    {
+      "file": "goryachee.jpg",
+      "prompt": "Hot lunch in brown takeaway box open view: rice meat and vegetables, steam rising, white studio"
+    },
+    {
+      "file": "salaty.jpg",
+      "prompt": "Fresh green salad in white bowl, colorful vegetables, light dressing gloss, white studio"
+    },
+    {
+      "file": "orehi_kulek.jpg",
+      "prompt": "Paper cone bag of mixed nuts, almonds cashews peanuts visible, white studio"
+    }
+  ]
+}

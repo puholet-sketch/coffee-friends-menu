@@ -11,7 +11,10 @@
           "price": "от 250 ₽",
           "description": "хрустящие слоёные круассаны — классика кофейни",
           "image": "assets/images/food/kruassany.jpg",
-          "tags": ["dessert", "preorder"]
+          "tags": [
+            "dessert",
+            "preorder"
+          ]
         },
         {
           "id": "batonchik",
@@ -20,7 +23,10 @@
           "price": "от 120 ₽",
           "description": "домашний батончик — уютный перекус к кофе",
           "image": "assets/images/food/batonchik.jpg",
-          "tags": ["dessert", "preorder"]
+          "tags": [
+            "dessert",
+            "preorder"
+          ]
         },
         {
           "id": "pechene",
@@ -29,7 +35,10 @@
           "price": "от 150 ₽",
           "description": "рассыпчатое печенье — идеально к чаю и латте",
           "image": "assets/images/food/pechene.jpg",
-          "tags": ["dessert", "preorder"]
+          "tags": [
+            "dessert",
+            "preorder"
+          ]
         },
         {
           "id": "sochnik",
@@ -38,7 +47,10 @@
           "price": "от 150 ₽",
           "description": "нежная творожная начинка в мягком тесте",
           "image": "assets/images/food/sochnik.jpg",
-          "tags": ["dessert", "preorder"]
+          "tags": [
+            "dessert",
+            "preorder"
+          ]
         },
         {
           "id": "trubochka_so_sguschenkoy",
@@ -47,16 +59,10 @@
           "price": "от 150 ₽",
           "description": "хрустящая вафля с нежной сгущёнкой внутри",
           "image": "assets/images/food/trubochka_so_sguschenkoy.jpg",
-          "tags": ["dessert", "preorder"]
-        },
-        {
-          "id": "iriska",
-          "name": "Ириска",
-          "volume": "порция",
-          "price": "от 80 ₽",
-          "description": "карамельная ириска — сладкая ностальгия",
-          "image": "assets/images/food/iriska.jpg",
-          "tags": ["dessert", "preorder"]
+          "tags": [
+            "dessert",
+            "preorder"
+          ]
         },
         {
           "id": "konfety_dabl_babl_v_assortimente",
@@ -65,7 +71,9 @@
           "price": "от 70 ₽",
           "description": "небольшие шоколадные конфеты в виде капелек‑пирамидок, упакованные в крафтовый бумажный пакет с завязкой сверху — дабл бабл в ассортименте",
           "image": "assets/images/food/konfety_dabl_babl.jpg",
-          "tags": ["dessert"]
+          "tags": [
+            "dessert"
+          ]
         }
       ]
     },
@@ -80,7 +88,10 @@
           "price": "от 300 ₽",
           "description": "свежий хлеб, сытная начинка — к обеду или перекусу",
           "image": "assets/images/food/sendvichi.jpg",
-          "tags": ["sandwich", "preorder"]
+          "tags": [
+            "sandwich",
+            "preorder"
+          ]
         },
         {
           "id": "chiabatta",
@@ -89,7 +100,10 @@
           "price": "от 350 ₽",
           "description": "хрустящая чиабатта с сочной начинкой",
           "image": "assets/images/food/chiabatta.jpg",
-          "tags": ["sandwich", "preorder"]
+          "tags": [
+            "sandwich",
+            "preorder"
+          ]
         },
         {
           "id": "rolly",
@@ -98,7 +112,10 @@
           "price": "от 300 ₽",
           "description": "лаваш-ролл с начинкой — удобно взять с собой",
           "image": "assets/images/food/rolly.jpg",
-          "tags": ["sandwich", "preorder"]
+          "tags": [
+            "sandwich",
+            "preorder"
+          ]
         }
       ]
     },
@@ -113,7 +130,10 @@
           "price": "от 270 ₽",
           "description": "сытный завтрак — начните день с аппетита",
           "image": "assets/images/food/zavtraki.jpg",
-          "tags": ["hot", "preorder"]
+          "tags": [
+            "hot",
+            "preorder"
+          ]
         },
         {
           "id": "goryachee",
@@ -122,7 +142,10 @@
           "price": "от 370 ₽",
           "description": "тёплое блюдо на каждый день — сытно и по-домашнему",
           "image": "assets/images/food/goryachee.jpg",
-          "tags": ["hot", "preorder"]
+          "tags": [
+            "hot",
+            "preorder"
+          ]
         },
         {
           "id": "salaty",
@@ -131,7 +154,9 @@
           "price": "от 320 ₽",
           "description": "свежие салаты с сезонными овощами",
           "image": "assets/images/food/salaty.jpg",
-          "tags": ["preorder"]
+          "tags": [
+            "preorder"
+          ]
         },
         {
           "id": "orehi_kulek_v_assortimente",
@@ -140,7 +165,9 @@
           "price": "от 200 ₽",
           "description": "ореховый микс в бумажном кульке — лёгкий перекус",
           "image": "assets/images/food/orehi_kulek.jpg",
-          "tags": ["preorder"]
+          "tags": [
+            "preorder"
+          ]
         }
       ]
     }
