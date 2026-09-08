@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260908-season">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260908-food-nodisc">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,7 +27,7 @@
   </div>
 
   <script>
-    const ASSET_VER = '20260908-season';
+    const ASSET_VER = '20260908-food-nodisc';
     const MENU_DISCOUNT_PERCENT = 20;
     const PRELOAD_RADIUS = 2;
     const ROTATE_KEY = 'cf-menu-rotate';
@@ -179,7 +179,7 @@
       const slide = document.createElement('article');
       slide.className = 'slide';
 
-      const discountPercent = MENU_DISCOUNT_PERCENT;
+      const discountPercent = kind === 'food' ? null : MENU_DISCOUNT_PERCENT;
       const isNew = isNewItem(item);
 
       const tagsHtml = (item.tags || [])
