@@ -254,15 +254,6 @@
           ]
         },
         {
-          "id": "raf_avtorskiy",
-          "name": "Раф авторский",
-          "volume": "350 мл — 400 ₽ · 450 мл — 450 ₽",
-          "price": "от 400 ₽",
-          "description": "авторский раф с сезонным акцентом",
-          "image": "assets/images/drinks/raf-signature.jpg",
-          "tags": []
-        },
-        {
           "id": "coconut-caramel-iced-latte",
           "name": "Кокос Карамель Айс Латте",
           "volume": "350 мл — 370 ₽",
