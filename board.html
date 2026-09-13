@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260909-no-raf">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260913-promo">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,8 +27,8 @@
   </div>
 
   <script>
-    const ASSET_VER = '20260909-no-raf';
-    const MENU_DISCOUNT_PERCENT = 20;
+    const ASSET_VER = '20260913-promo';
+    const MENU_DISCOUNT_PERCENT = 0; // paused — restore later; combos use item.discountPercent
     const PRELOAD_RADIUS = 2;
     const ROTATE_KEY = 'cf-menu-rotate';
     const ROTATE_MODES = ['off', 'cw', 'ccw'];
@@ -43,7 +43,8 @@
       sweet: 'сладкое',
       sandwich: 'сэндвич',
       food: 'еда',
-      preorder: 'предзаказ'
+      preorder: 'предзаказ',
+      combo: 'комбо'
     };
 
     function brandHtml(brand) {
@@ -82,6 +83,34 @@
         <p class="intro__tagline">${brand.tagline || ''}</p>
         <div class="intro__line" aria-hidden="true"></div>
         <p class="intro__bot">@coffeefriends_orders_bot</p>
+      `;
+      return slide;
+    }
+
+    function createPersonalDiscountSlide(brand) {
+      const slide = document.createElement('article');
+      slide.className = 'slide slide--promo';
+      slide.innerHTML = `
+        <header class="slide__header">
+          <div class="brand-mark">
+            <span class="brand-mark__icon" aria-hidden="true"></span>
+            <span class="brand-mark__text">${brandHtml(brand)}</span>
+          </div>
+          <span class="category-badge">Сентябрь</span>
+        </header>
+        <div class="promo">
+          <div class="promo__mark" aria-hidden="true"></div>
+          <p class="promo__eyebrow">Только в сентябре</p>
+          <h2 class="promo__title">Персональные скидки</h2>
+          <p class="promo__lead">У каждого гостя — своя. Уточните размер скидки у бариста или в боте заказа.</p>
+          <ul class="promo__points">
+            <li>Скидка закрепляется за вами</li>
+            <li>Действует на напитки и еду</li>
+            <li>Спросите при заказе — назовём ваш процент</li>
+          </ul>
+          <div class="promo__line" aria-hidden="true"></div>
+          <p class="promo__bot">@coffeefriends_orders_bot</p>
+        </div>
       `;
       return slide;
     }
@@ -179,7 +208,9 @@
       const slide = document.createElement('article');
       slide.className = 'slide';
 
-      const discountPercent = kind === 'food' ? null : MENU_DISCOUNT_PERCENT;
+      const discountPercent = Number.isFinite(Number(item.discountPercent)) && Number(item.discountPercent) > 0
+        ? Number(item.discountPercent)
+        : (MENU_DISCOUNT_PERCENT > 0 && kind !== 'food' ? MENU_DISCOUNT_PERCENT : null);
       const isNew = isNewItem(item);
 
       const tagsHtml = (item.tags || [])
@@ -503,7 +534,10 @@
         applyFrame(drinks.settings);
 
         const frame = document.getElementById('frame');
-        const allSlides = [createIntroSlide(drinks.brand)];
+        const allSlides = [
+          createIntroSlide(drinks.brand),
+          createPersonalDiscountSlide(drinks.brand)
+        ];
 
         for (const { item, categoryTitle, kind } of flattenCategories(drinks, 'drinks')) {
           allSlides.push(createItemSlide(item, categoryTitle, drinks.brand, kind));

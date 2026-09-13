@@ -1,6 +1,40 @@
 {
   "categories": [
     {
+      "id": "combo",
+      "title": "Комбо",
+      "items": [
+        {
+          "id": "combo-sandwich-drink",
+          "name": "Сэндвич + напиток",
+          "volume": "комбо-набор",
+          "price": "от 400 ₽",
+          "discountPercent": 20,
+          "new": true,
+          "description": "сэндвич и любой напиток — скидка 20% на набор",
+          "image": "assets/images/food/combo-sandwich-drink.jpg",
+          "tags": [
+            "combo",
+            "preorder"
+          ]
+        },
+        {
+          "id": "combo-croissant-drink",
+          "name": "Круассан + напиток",
+          "volume": "комбо-набор",
+          "price": "от 350 ₽",
+          "discountPercent": 20,
+          "new": true,
+          "description": "круассан и любой напиток — скидка 20% на набор",
+          "image": "assets/images/food/combo-croissant-drink.jpg",
+          "tags": [
+            "combo",
+            "dessert"
+          ]
+        }
+      ]
+    },
+    {
       "id": "pastry",
       "title": "Десерты",
       "items": [

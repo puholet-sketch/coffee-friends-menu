@@ -235,13 +235,7 @@
           "description": "эспрессо на тонике — бодрящий и игристый",
           "image": "assets/images/drinks/espresso-tonic.jpg",
           "tags": []
-        }
-      ]
-    },
-    {
-      "id": "seasonal",
-      "title": "Сезонные",
-      "drinks": [
+        },
         {
           "id": "ays_latte",
           "name": "Айс латте",
@@ -251,84 +245,6 @@
           "image": "assets/images/drinks/iced-latte.jpg",
           "tags": [
             "cold"
-          ]
-        },
-        {
-          "id": "coconut-caramel-iced-latte",
-          "name": "Кокос Карамель Айс Латте",
-          "volume": "350 мл — 370 ₽",
-          "price": "370 ₽",
-          "new": true,
-          "description": "айс-латте с кокосом и карамелью",
-          "image": "assets/images/drinks/coconut-caramel-iced-latte.jpg",
-          "tags": [
-            "cold",
-            "seasonal"
-          ]
-        },
-        {
-          "id": "apelsin_imbir",
-          "name": "Апельсин-Имбирь",
-          "volume": "450 мл — 350 ₽",
-          "price": "350 ₽",
-          "description": "апельсин с имбирём — цитрус и тепло",
-          "image": "assets/images/drinks/apelsin_imbir.jpg",
-          "tags": [
-            "hot",
-            "seasonal"
-          ],
-          "new": true
-        },
-        {
-          "id": "klubnika_smorodina_450_ml",
-          "name": "Смородина-Клубника",
-          "volume": "450 мл — 350 ₽",
-          "price": "350 ₽",
-          "description": "смородина и клубника — насыщенный фруктовый чай",
-          "image": "assets/images/drinks/klubnika_smorodina_450_ml.jpg",
-          "tags": [
-            "hot",
-            "seasonal"
-          ],
-          "new": true
-        },
-        {
-          "id": "malina_shipovnik_450_ml",
-          "name": "Малина-Шиповник",
-          "volume": "450 мл — 350 ₽",
-          "price": "350 ₽",
-          "description": "малина и шиповник — ягодный горячий чай",
-          "image": "assets/images/drinks/malina_shipovnik_450_ml.jpg",
-          "tags": [
-            "hot",
-            "seasonal"
-          ],
-          "new": true
-        },
-        {
-          "id": "oblepiha_imbir",
-          "name": "Облепиха-Имбирь",
-          "volume": "450 мл — 350 ₽",
-          "price": "350 ₽",
-          "description": "облепиха и имбирь — яркий согревающий чай",
-          "image": "assets/images/drinks/oblepiha_imbir.jpg",
-          "tags": [
-            "hot",
-            "seasonal"
-          ],
-          "new": true
-        },
-        {
-          "id": "mocaccino",
-          "name": "Мокачино",
-          "volume": "450 мл — 350 ₽",
-          "price": "350 ₽",
-          "new": true,
-          "description": "шоколад, эспрессо и молоко — сезонный мокачино",
-          "image": "assets/images/drinks/mocaccino.jpg",
-          "tags": [
-            "hot",
-            "seasonal"
           ]
         }
       ]
