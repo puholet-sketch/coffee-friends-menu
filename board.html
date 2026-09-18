@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260913-promo2">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260918-skidosy">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,7 +27,8 @@
   </div>
 
   <script>
-    const ASSET_VER = '20260913-promo2';
+    const ASSET_VER = '20260918-skidosy';
+    const PROMO_EVERY_N_CARDS = 2;
     const MENU_DISCOUNT_PERCENT = 0; // paused — restore later; combos use item.discountPercent
     const PRELOAD_RADIUS = 2;
     const ROTATE_KEY = 'cf-menu-rotate';
@@ -100,16 +101,23 @@
         <div class="promo">
           <div class="promo__mark" aria-hidden="true"></div>
           <p class="promo__eyebrow">Только в сентябре</p>
-          <h2 class="promo__title">Новинки, акции<br>и скидки в сентябре!</h2>
-          <p class="promo__lead">Уточните условия у бариста — расскажем про новинки, комбо и вашу скидку.</p>
-          <ul class="promo__points">
-            <li>Новинки меню на витрине</li>
-            <li>Комбо со скидкой 20%</li>
-            <li>Персональная скидка — спросите при заказе</li>
-          </ul>
+          <h2 class="promo__title">Скидосы в сентябре!</h2>
+          <p class="promo__offer">20% на комбо</p>
+          <p class="promo__lead">Подробности у бариста</p>
         </div>
       `;
       return slide;
+    }
+
+    function interleavePromoSlides(itemSlides, brand, everyN = PROMO_EVERY_N_CARDS) {
+      const out = [];
+      for (let i = 0; i < itemSlides.length; i++) {
+        out.push(itemSlides[i]);
+        if ((i + 1) % everyN === 0) {
+          out.push(createPersonalDiscountSlide(brand));
+        }
+      }
+      return out;
     }
 
     function formatMeta(item, opts = {}) {
@@ -531,18 +539,20 @@
         applyFrame(drinks.settings);
 
         const frame = document.getElementById('frame');
-        const allSlides = [
-          createIntroSlide(drinks.brand),
-          createPersonalDiscountSlide(drinks.brand)
-        ];
+        const itemSlides = [];
 
         for (const { item, categoryTitle, kind } of flattenCategories(drinks, 'drinks')) {
-          allSlides.push(createItemSlide(item, categoryTitle, drinks.brand, kind));
+          itemSlides.push(createItemSlide(item, categoryTitle, drinks.brand, kind));
         }
 
         for (const { item, categoryTitle, kind } of flattenCategories(food, 'items')) {
-          allSlides.push(createItemSlide(item, categoryTitle, drinks.brand, kind));
+          itemSlides.push(createItemSlide(item, categoryTitle, drinks.brand, kind));
         }
+
+        const allSlides = [
+          createIntroSlide(drinks.brand),
+          ...interleavePromoSlides(itemSlides, drinks.brand, PROMO_EVERY_N_CARDS)
+        ];
 
         allSlides.forEach(s => frame.appendChild(s));
         runSlideshow(allSlides, drinks.settings.slideDurationSec || 3.5);
