@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260918-leaves">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260918-leaves2">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,7 +27,7 @@
   </div>
 
   <script>
-    const ASSET_VER = '20260918-leaves';
+    const ASSET_VER = '20260918-leaves2';
     const PROMO_EVERY_N_CARDS = 2;
     const MENU_DISCOUNT_PERCENT = 0; // paused — restore later; combos use item.discountPercent
     const PRELOAD_RADIUS = 2;
@@ -90,15 +90,15 @@
     function createPersonalDiscountSlide(brand) {
       const slide = document.createElement('article');
       slide.className = 'slide slide--promo';
-      const leaves = Array.from({ length: 18 }, (_, i) => {
+      const leaves = Array.from({ length: 16 }, (_, i) => {
         const tone = (i % 4) + 1;
-        const delay = ((i * 0.42) % 5.5).toFixed(2);
-        const duration = (5.5 + (i % 6) * 0.85).toFixed(1);
-        const left = (3 + (i * 5.4) % 94).toFixed(1);
-        const drift = ((i % 2 === 0 ? 1 : -1) * (22 + (i % 5) * 14)).toFixed(0);
-        const size = (16 + (i % 6) * 4).toFixed(0);
-        const spin = (i % 2 === 0 ? 1 : -1) * (320 + i * 28);
-        return `<span class="leaf leaf--${tone}" style="--leaf-left:${left}%;--leaf-delay:${delay}s;--leaf-dur:${duration}s;--leaf-drift:${drift}px;--leaf-size:${size}px;--leaf-spin:${spin}deg" aria-hidden="true"></span>`;
+        const delay = ((i * 0.45) % 5.2).toFixed(2);
+        const duration = (6 + (i % 5) * 0.9).toFixed(1);
+        const left = (4 + (i * 5.8) % 92).toFixed(1);
+        const drift = ((i % 2 === 0 ? 1 : -1) * (24 + (i % 5) * 12)).toFixed(0);
+        const size = (16 + (i % 5) * 4).toFixed(0);
+        const spin = (i % 2 === 0 ? 1 : -1) * (340 + i * 30);
+        return `<span class="leaf-track" style="left:${left}%;--leaf-delay:${delay}s;--leaf-dur:${duration}s;--leaf-drift:${drift}px" aria-hidden="true"><span class="leaf leaf--${tone}" style="--leaf-size:${size}px;--leaf-spin:${spin}deg"></span></span>`;
       }).join('');
 
       slide.innerHTML = `
@@ -432,7 +432,7 @@
     }
 
     function fitSlideCaptions(slide) {
-      if (!slide || slide.classList.contains('slide--intro')) return;
+      if (!slide || slide.classList.contains('slide--intro') || slide.classList.contains('slide--promo')) return;
       const info = slide.querySelector('.slide__info');
       const name = slide.querySelector('.slide__name');
       const desc = slide.querySelector('.slide__desc');
@@ -506,19 +506,8 @@
       let index = 0;
       let timer = null;
 
-      function restartPromoLeaves(slide) {
-        if (!slide || !slide.classList.contains('slide--promo')) return;
-        slide.querySelectorAll('.leaf').forEach((leaf) => {
-          leaf.style.animation = 'none';
-          // force reflow so animation restarts when promo becomes active
-          void leaf.offsetWidth;
-          leaf.style.animation = '';
-        });
-      }
-
       function show(i) {
         slides.forEach((s, j) => s.classList.toggle('slide--active', j === i));
-        restartPromoLeaves(slides[i]);
         preloadAround(slides, i);
         requestAnimationFrame(() => {
           requestAnimationFrame(() => fitSlideCaptions(slides[i]));
