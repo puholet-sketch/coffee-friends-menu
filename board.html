@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20260918-combo1line">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20260918-leaves3">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,7 +27,7 @@
   </div>
 
   <script>
-    const ASSET_VER = '20260918-combo1line';
+    const ASSET_VER = '20260918-leaves3';
     const PROMO_EVERY_N_CARDS = 2;
     const MENU_DISCOUNT_PERCENT = 0; // paused — restore later; combos use item.discountPercent
     const PRELOAD_RADIUS = 2;
@@ -90,46 +90,44 @@
     function createPersonalDiscountSlide(brand) {
       const slide = document.createElement('article');
       slide.className = 'slide slide--promo';
-      const leaves = Array.from({ length: 16 }, (_, i) => {
+
+      const leafHtml = Array.from({ length: 12 }, (_, i) => {
         const tone = (i % 4) + 1;
-        const delay = ((i * 0.45) % 5.2).toFixed(2);
-        const duration = (6 + (i % 5) * 0.9).toFixed(1);
-        const left = (4 + (i * 5.8) % 92).toFixed(1);
-        const drift = ((i % 2 === 0 ? 1 : -1) * (24 + (i % 5) * 12)).toFixed(0);
-        const size = (16 + (i % 5) * 4).toFixed(0);
-        const spin = (i % 2 === 0 ? 1 : -1) * (340 + i * 30);
-        return `<span class="leaf-track" style="left:${left}%;--leaf-delay:${delay}s;--leaf-dur:${duration}s;--leaf-drift:${drift}px" aria-hidden="true"><span class="leaf leaf--${tone}" style="--leaf-size:${size}px;--leaf-spin:${spin}deg"></span></span>`;
+        const delay = ((i * 0.55) % 4.8).toFixed(2);
+        const duration = (6.5 + (i % 4) * 1.2).toFixed(1);
+        const left = (6 + (i * 7.5) % 88).toFixed(1);
+        const drift = ((i % 2 === 0 ? 1 : -1) * (20 + (i % 4) * 14)).toFixed(0);
+        const size = (15 + (i % 4) * 4).toFixed(0);
+        const spin = (i % 2 === 0 ? 1 : -1) * (300 + i * 35);
+        return `<i class="leaf leaf--${tone}" style="left:${left}%;--d:${delay}s;--t:${duration}s;--x:${drift}px;--s:${size}px;--r:${spin}deg" aria-hidden="true"></i>`;
       }).join('');
 
       slide.innerHTML = `
-        <div class="promo__leaves" aria-hidden="true">${leaves}</div>
-        <header class="slide__header">
-          <div class="brand-mark">
-            <span class="brand-mark__icon" aria-hidden="true"></span>
-            <span class="brand-mark__text">${brandHtml(brand)}</span>
+        <div class="promo-fx" aria-hidden="true">${leafHtml}</div>
+        <div class="promo-card">
+          <header class="slide__header promo-card__head">
+            <div class="brand-mark">
+              <span class="brand-mark__icon" aria-hidden="true"></span>
+              <span class="brand-mark__text">${brandHtml(brand)}</span>
+            </div>
+            <span class="category-badge">Осень</span>
+          </header>
+          <div class="promo-card__body">
+            <div class="promo__mark" aria-hidden="true"></div>
+            <p class="promo__eyebrow">Всю осень</p>
+            <h2 class="promo__title">Скидосы всю осень!</h2>
+            <p class="promo__offer">20% на комбо</p>
+            <p class="promo__lead">Подробности у бариста</p>
           </div>
-          <span class="category-badge">Осень</span>
-        </header>
-        <div class="promo">
-          <div class="promo__mark" aria-hidden="true"></div>
-          <p class="promo__eyebrow">Всю осень</p>
-          <h2 class="promo__title">Скидосы всю осень!</h2>
-          <p class="promo__offer">20% на комбо</p>
-          <p class="promo__lead">Подробности у бариста</p>
         </div>
       `;
       return slide;
     }
 
-    function interleavePromoSlides(itemSlides, brand, everyN = PROMO_EVERY_N_CARDS) {
-      const out = [];
-      for (let i = 0; i < itemSlides.length; i++) {
-        out.push(itemSlides[i]);
-        if ((i + 1) % everyN === 0) {
-          out.push(createPersonalDiscountSlide(brand));
-        }
-      }
-      return out;
+    function syncPromoFallDistance(slide) {
+      if (!slide || !slide.classList.contains('slide--promo')) return;
+      const h = Math.max(slide.clientHeight || 0, 640);
+      slide.style.setProperty('--fall', `${h + 80}px`);
     }
 
     function formatMeta(item, opts = {}) {
@@ -501,16 +499,31 @@
       }
     }
 
-    function runSlideshow(slides, durationSec) {
+    function buildSlideSequence(intro, promo, itemSlides, everyN = PROMO_EVERY_N_CARDS) {
+      const sequence = [intro, promo];
+      for (let i = 0; i < itemSlides.length; i++) {
+        sequence.push(itemSlides[i]);
+        if ((i + 1) % everyN === 0) {
+          sequence.push(promo);
+        }
+      }
+      return sequence;
+    }
+
+    function runSlideshow(sequence, durationSec) {
       const bar = document.getElementById('progress');
+      const uniqueSlides = [...new Set(sequence)];
       let index = 0;
       let timer = null;
 
       function show(i) {
-        slides.forEach((s, j) => s.classList.toggle('slide--active', j === i));
-        preloadAround(slides, i);
+        const active = sequence[i];
+        uniqueSlides.forEach((s) => s.classList.toggle('slide--active', s === active));
+        syncPromoFallDistance(active);
+        const uniqueIndex = uniqueSlides.indexOf(active);
+        preloadAround(uniqueSlides, Math.max(0, uniqueIndex));
         requestAnimationFrame(() => {
-          requestAnimationFrame(() => fitSlideCaptions(slides[i]));
+          requestAnimationFrame(() => fitSlideCaptions(active));
         });
 
         bar.style.transition = 'none';
@@ -524,14 +537,17 @@
       }
 
       function tick() {
-        index = (index + 1) % slides.length;
+        index = (index + 1) % sequence.length;
         show(index);
       }
 
       show(0);
       timer = setInterval(tick, durationSec * 1000);
 
-      window.addEventListener('resize', () => fitSlideCaptions(slides[index]));
+      window.addEventListener('resize', () => {
+        syncPromoFallDistance(sequence[index]);
+        fitSlideCaptions(sequence[index]);
+      });
 
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
@@ -561,14 +577,14 @@
           itemSlides.push(createItemSlide(item, categoryTitle, drinks.brand, kind));
         }
 
-        const allSlides = [
-          createIntroSlide(drinks.brand),
-          createPersonalDiscountSlide(drinks.brand),
-          ...interleavePromoSlides(itemSlides, drinks.brand, PROMO_EVERY_N_CARDS)
-        ];
+        const intro = createIntroSlide(drinks.brand);
+        const promo = createPersonalDiscountSlide(drinks.brand);
+        const sequence = buildSlideSequence(intro, promo, itemSlides, PROMO_EVERY_N_CARDS);
 
-        allSlides.forEach(s => frame.appendChild(s));
-        runSlideshow(allSlides, drinks.settings.slideDurationSec || 3.5);
+        // One DOM node per unique slide (promo is reused in the sequence)
+        [intro, promo, ...itemSlides].forEach((s) => frame.appendChild(s));
+        syncPromoFallDistance(promo);
+        runSlideshow(sequence, drinks.settings.slideDurationSec || 3.5);
       } catch (err) {
         document.body.innerHTML = `<pre style="color:#c9b067;padding:2rem;font-family:monospace">${err.message}\n\nЗапуск:\ncd d:\\projects\\MarketingCofe\\menu\npython -m http.server 8080\n\n→ http://localhost:8080/board.html</pre>`;
       }
