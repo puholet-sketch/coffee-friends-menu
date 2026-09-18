@@ -846,6 +846,7 @@ html[data-rotate="ccw"] .board__progress {
   line-height: 1.1;
   color: var(--ink);
   margin-bottom: clamp(14px, 2vh, 22px);
+  white-space: nowrap;
 }
 
 .promo__lead {
