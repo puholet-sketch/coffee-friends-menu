@@ -683,9 +683,7 @@ html[data-rotate="ccw"] .board__progress {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse 90% 45% at 50% 12%, rgba(201, 176, 103, 0.16) 0%, transparent 55%),
-    linear-gradient(180deg, #fff8ef 0%, var(--paper) 55%, #f7f1e8 100%);
+  background: var(--paper);
 }
 
 .promo__leaves {
@@ -704,53 +702,54 @@ html[data-rotate="ccw"] .board__progress {
 
 .leaf {
   position: absolute;
-  top: -12%;
+  top: -14%;
   left: var(--leaf-left, 50%);
-  width: var(--leaf-size, 18px);
-  height: calc(var(--leaf-size, 18px) * 1.35);
-  border-radius: 2% 80% 10% 80%;
-  opacity: 0.88;
-  transform-origin: 50% 50%;
-  will-change: transform, opacity;
-  animation: leaf-fall var(--leaf-dur, 8s) linear var(--leaf-delay, 0s) infinite;
-  box-shadow: inset -2px -3px 0 rgba(0, 0, 0, 0.12);
+  width: var(--leaf-size, 20px);
+  height: calc(var(--leaf-size, 20px) * 1.4);
+  margin-left: calc(var(--leaf-size, 20px) * -0.5);
+  border-radius: 2% 82% 12% 82%;
+  opacity: 0;
+  transform-origin: 50% 60%;
+  will-change: top, transform, opacity;
+  animation-name: leaf-fall;
+  animation-duration: var(--leaf-dur, 8s);
+  animation-timing-function: linear;
+  animation-delay: var(--leaf-delay, 0s);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  box-shadow: inset -2px -3px 0 rgba(0, 0, 0, 0.14);
 }
 
 .leaf::after {
   content: "";
   position: absolute;
   left: 48%;
-  top: 12%;
+  top: 10%;
   width: 1.5px;
-  height: 72%;
-  background: rgba(0, 0, 0, 0.18);
+  height: 74%;
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 1px;
-  transform: translateX(-50%) rotate(4deg);
+  transform: translateX(-50%) rotate(3deg);
 }
 
-.leaf--1 { background: linear-gradient(145deg, #d97706, #b45309); }
+.leaf--1 { background: linear-gradient(145deg, #e8a317, #b45309); }
 .leaf--2 { background: linear-gradient(145deg, #c00000, #8a0000); }
-.leaf--3 { background: linear-gradient(145deg, #ca8a04, #a16207); }
-.leaf--4 { background: linear-gradient(145deg, #ea580c, #c2410c); }
+.leaf--3 { background: linear-gradient(145deg, #d4a017, #92650a); }
+.leaf--4 { background: linear-gradient(145deg, #f07316, #c2410c); }
 
 @keyframes leaf-fall {
   0% {
-    transform: translate3d(0, -8%, 0) rotate(0deg);
+    top: -14%;
+    transform: translateX(0) rotate(0deg) scale(0.92);
     opacity: 0;
   }
-  8% { opacity: 0.9; }
-  100% {
-    transform: translate3d(var(--leaf-drift, 40px), 118vh, 0) rotate(var(--leaf-spin, 360deg));
-    opacity: 0.35;
+  6% {
+    opacity: 0.95;
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .leaf {
-    animation: none;
-    opacity: 0.35;
-    top: auto;
-    bottom: 8%;
+  100% {
+    top: 108%;
+    transform: translateX(var(--leaf-drift, 36px)) rotate(var(--leaf-spin, 360deg)) scale(1);
+    opacity: 0.45;
   }
 }
 
