@@ -679,11 +679,79 @@ html[data-rotate="ccw"] .board__progress {
 /* ── Promo (personal discount / campaigns) ── */
 
 .slide--promo {
+  position: relative;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background:
-    radial-gradient(ellipse 90% 45% at 50% 12%, rgba(201, 176, 103, 0.14) 0%, transparent 55%),
-    var(--paper);
+    radial-gradient(ellipse 90% 45% at 50% 12%, rgba(201, 176, 103, 0.16) 0%, transparent 55%),
+    linear-gradient(180deg, #fff8ef 0%, var(--paper) 55%, #f7f1e8 100%);
+}
+
+.promo__leaves {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.slide--promo > .slide__header,
+.slide--promo > .promo {
+  position: relative;
+  z-index: 1;
+}
+
+.leaf {
+  position: absolute;
+  top: -12%;
+  left: var(--leaf-left, 50%);
+  width: var(--leaf-size, 18px);
+  height: calc(var(--leaf-size, 18px) * 1.35);
+  border-radius: 2% 80% 10% 80%;
+  opacity: 0.88;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+  animation: leaf-fall var(--leaf-dur, 8s) linear var(--leaf-delay, 0s) infinite;
+  box-shadow: inset -2px -3px 0 rgba(0, 0, 0, 0.12);
+}
+
+.leaf::after {
+  content: "";
+  position: absolute;
+  left: 48%;
+  top: 12%;
+  width: 1.5px;
+  height: 72%;
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 1px;
+  transform: translateX(-50%) rotate(4deg);
+}
+
+.leaf--1 { background: linear-gradient(145deg, #d97706, #b45309); }
+.leaf--2 { background: linear-gradient(145deg, #c00000, #8a0000); }
+.leaf--3 { background: linear-gradient(145deg, #ca8a04, #a16207); }
+.leaf--4 { background: linear-gradient(145deg, #ea580c, #c2410c); }
+
+@keyframes leaf-fall {
+  0% {
+    transform: translate3d(0, -8%, 0) rotate(0deg);
+    opacity: 0;
+  }
+  8% { opacity: 0.9; }
+  100% {
+    transform: translate3d(var(--leaf-drift, 40px), 118vh, 0) rotate(var(--leaf-spin, 360deg));
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leaf {
+    animation: none;
+    opacity: 0.35;
+    top: auto;
+    bottom: 8%;
+  }
 }
 
 .promo {
