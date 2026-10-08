@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20261008-pct-boom">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20261008-pct-jsboom">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,10 +27,111 @@
   </div>
 
   <script>
-    const ASSET_VER = '20261008-pct-boom';
+    const ASSET_VER = '20261008-pct-jsboom';
     const PROMO_EVERY_N_CARDS = 2;
     const POEM_CLASSIC_DURATION_SEC = 22;
     const POEM_CF_DURATION_SEC = 5.25;
+    const PROMO_PCT_CYCLE_MS = 900;
+
+    let promoPctRaf = null;
+
+    function stopPromoPctBoom() {
+      if (promoPctRaf != null) {
+        cancelAnimationFrame(promoPctRaf);
+        promoPctRaf = null;
+      }
+      document.querySelectorAll('.promo__pct').forEach((el) => {
+        el.classList.remove('promo__pct--js');
+        el.style.transform = '';
+        el.style.filter = '';
+        el.style.textShadow = '';
+        const ghost = el.querySelector('.promo__pct-ghost');
+        if (ghost) {
+          ghost.style.opacity = '0';
+          ghost.style.transform = '';
+        }
+      });
+    }
+
+    /** JS boom-boom — ignores OS prefers-reduced-motion (common on Windows TV/Edge). */
+    function startPromoPctBoom(slide) {
+      stopPromoPctBoom();
+      if (!slide || !slide.classList.contains('slide--promo')) return;
+      const el = slide.querySelector('.promo__pct');
+      if (!el) return;
+
+      el.classList.add('promo__pct--js');
+      // Ensure ghost ring node exists for JS opacity/scale
+      let ghost = el.querySelector('.promo__pct-ghost');
+      if (!ghost) {
+        ghost = document.createElement('span');
+        ghost.className = 'promo__pct-ghost';
+        ghost.setAttribute('aria-hidden', 'true');
+        ghost.textContent = '20%';
+        el.appendChild(ghost);
+      }
+      el._ghostEl = ghost;
+
+      const t0 = performance.now();
+
+      function beat(p) {
+        // Double punch in one cycle: ~12% and ~38%
+        let scale = 1;
+        let glow = 0;
+        let ghostOp = 0;
+        let ghostScale = 1;
+        if (p < 0.12) {
+          const u = p / 0.12;
+          const s = Math.sin(u * Math.PI);
+          scale = 1 + 0.16 * s;
+          glow = s;
+          ghostOp = 0.9 * s;
+          ghostScale = 1 + 0.28 * s;
+        } else if (p < 0.22) {
+          const u = (p - 0.12) / 0.1;
+          scale = 1.16 - 0.23 * u;
+          glow = 1 - u;
+          ghostOp = (1 - u) * 0.5;
+          ghostScale = 1.28 + 0.22 * u;
+        } else if (p < 0.38) {
+          const u = (p - 0.22) / 0.16;
+          const s = Math.sin(u * Math.PI);
+          scale = 0.93 + 0.19 * s;
+          glow = 0.85 * s;
+          ghostOp = 0.75 * s;
+          ghostScale = 1 + 0.22 * s;
+        } else if (p < 0.5) {
+          const u = (p - 0.38) / 0.12;
+          scale = 1;
+          glow = 0.15 * (1 - u);
+          ghostOp = 0;
+          ghostScale = 1.2;
+        }
+        return { scale, glow, ghostOp, ghostScale };
+      }
+
+      function tick(now) {
+        if (!slide.classList.contains('slide--active')) {
+          stopPromoPctBoom();
+          return;
+        }
+        const p = ((now - t0) % PROMO_PCT_CYCLE_MS) / PROMO_PCT_CYCLE_MS;
+        const { scale, glow, ghostOp, ghostScale } = beat(p);
+        el.style.transform = `scale(${scale.toFixed(4)})`;
+        el.style.filter = `brightness(${(1 + glow * 0.22).toFixed(3)})`;
+        el.style.textShadow =
+          glow > 0.04
+            ? `0 0 ${(4 + glow * 14).toFixed(1)}px rgba(255,255,255,${(0.5 + glow * 0.45).toFixed(2)}),` +
+              `0 0 ${(12 + glow * 22).toFixed(1)}px rgba(192,0,0,${(0.35 + glow * 0.5).toFixed(2)}),` +
+              `0 0 ${(28 + glow * 24).toFixed(1)}px rgba(251,90,90,${(glow * 0.55).toFixed(2)})`
+            : 'none';
+        ghost.style.opacity = String(ghostOp.toFixed(3));
+        ghost.style.transform = `scale(${ghostScale.toFixed(4)})`;
+        promoPctRaf = requestAnimationFrame(tick);
+      }
+
+      promoPctRaf = requestAnimationFrame(tick);
+    }
     const MENU_DISCOUNT_PERCENT = 0; // paused — restore later; combos use item.discountPercent
     const PRELOAD_RADIUS = 2;
     const ROTATE_KEY = 'cf-menu-rotate';
@@ -639,6 +740,7 @@
         const dur = slideDurationSec(active, durationSec, classicSec, cfSec);
         uniqueSlides.forEach((s) => s.classList.toggle('slide--active', s === active));
         syncPromoFallDistance(active);
+        startPromoPctBoom(active);
         const uniqueIndex = uniqueSlides.indexOf(active);
         preloadAround(uniqueSlides, Math.max(0, uniqueIndex));
         requestAnimationFrame(() => {
