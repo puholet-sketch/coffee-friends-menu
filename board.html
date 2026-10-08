@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20261008-promo-pulse">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20261008-carousel-v3">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,9 +27,10 @@
   </div>
 
   <script>
-    const ASSET_VER = '20261008-promo-pulse';
+    const ASSET_VER = '20261008-carousel-v3';
     const PROMO_EVERY_N_CARDS = 2;
-    const POEM_DURATION_SEC = 11;
+    const POEM_CLASSIC_DURATION_SEC = 11;
+    const POEM_CF_DURATION_SEC = 3.5;
     const MENU_DISCOUNT_PERCENT = 0; // paused — restore later; combos use item.discountPercent
     const PRELOAD_RADIUS = 2;
     const ROTATE_KEY = 'cf-menu-rotate';
@@ -74,7 +75,9 @@
       if (!drinksRes.ok) throw new Error('Не найден data/drinks.json — запустите сервер из папки menu');
       const drinks = await drinksRes.json();
       const food = foodRes.ok ? await foodRes.json() : { categories: [] };
-      const poems = poemsRes.ok ? await poemsRes.json() : { poems: [], durationSec: POEM_DURATION_SEC };
+      const poems = poemsRes.ok
+        ? await poemsRes.json()
+        : { classic: [], coffeeFriends: [] };
       return { drinks, food, poems };
     }
 
@@ -86,9 +89,11 @@
         .replace(/"/g, '&quot;');
     }
 
-    function createPoemSlide(poem, brand, eyebrow) {
+    function createPoemSlide(poem, brand, { eyebrow, variant = 'classic', badge = 'Стих' } = {}) {
       const slide = document.createElement('article');
-      slide.className = 'slide slide--poem';
+      const isCf = variant === 'cf';
+      slide.className = isCf ? 'slide slide--poem slide--poem-cf' : 'slide slide--poem';
+      slide.dataset.poemKind = isCf ? 'cf' : 'classic';
       const lines = (poem.lines || []).map((line) => `<p>${escapeHtml(line)}</p>`).join('');
       slide.innerHTML = `
         <div class="poem-card">
@@ -97,11 +102,11 @@
               <span class="brand-mark__icon" aria-hidden="true"></span>
               <span class="brand-mark__text">${brandHtml(brand)}</span>
             </div>
-            <span class="category-badge">Стих</span>
+            <span class="category-badge">${escapeHtml(badge)}</span>
           </header>
           <div class="poem-card__body">
             <div class="promo__mark" aria-hidden="true"></div>
-            <p class="poem__eyebrow">${escapeHtml(eyebrow || 'Осень')}</p>
+            <p class="poem__eyebrow">${escapeHtml(eyebrow || (isCf ? 'CoffeeFriends' : 'Осень'))}</p>
             <blockquote class="poem__text">${lines}</blockquote>
             <p class="poem__author">— ${escapeHtml(poem.author || '')}</p>
           </div>
@@ -333,12 +338,48 @@
         for (const item of items) {
           slides.push({
             item,
+            categoryId: cat.id || '',
             categoryTitle: cat.title,
             kind: itemKey === 'items' ? 'food' : 'drink'
           });
         }
       }
       return slides;
+    }
+
+    function isFeaturedEntry(entry) {
+      const item = entry.item || {};
+      const tags = item.tags || [];
+      return (
+        item.new === true ||
+        entry.categoryId === 'seasonal' ||
+        tags.includes('seasonal')
+      );
+    }
+
+    /** Featured (new/seasonal) first: zip featured drinks with food, then remaining drinks. */
+    function orderMenuEntries(drinkEntries, foodEntries) {
+      const featuredDrinks = [];
+      const restDrinks = [];
+      for (const e of drinkEntries) {
+        (isFeaturedEntry(e) ? featuredDrinks : restDrinks).push(e);
+      }
+
+      const featuredFood = [];
+      const restFood = [];
+      for (const e of foodEntries) {
+        (isFeaturedEntry(e) ? featuredFood : restFood).push(e);
+      }
+
+      const foodZip = [...featuredFood, ...restFood];
+      const ordered = [];
+      const n = Math.max(featuredDrinks.length, foodZip.length);
+      for (let i = 0; i < n; i += 1) {
+        if (i < featuredDrinks.length) ordered.push(featuredDrinks[i]);
+        if (i < foodZip.length) ordered.push(foodZip[i]);
+      }
+      ordered.push(...restDrinks);
+      return ordered;
     }
 
     function applyFrame(settings) {
@@ -539,39 +580,48 @@
       }
     }
 
-    function buildSlideSequence(intro, promo, poemSlides, itemSlides, everyN = PROMO_EVERY_N_CARDS) {
-      // intro → promo → poem → N cards → promo → poem → N cards → …
+    function buildSlideSequence(intro, promo, classicPoems, cfPoems, itemSlides, everyN = PROMO_EVERY_N_CARDS) {
+      // intro → promo → classic (11s) → CF (3.5s) → N cards → …
       const sequence = [intro];
-      let poemIdx = 0;
+      let classicIdx = 0;
+      let cfIdx = 0;
       let i = 0;
-      const hasPoems = poemSlides.length > 0;
 
       while (i < itemSlides.length) {
         sequence.push(promo);
-        if (hasPoems) {
-          sequence.push(poemSlides[poemIdx % poemSlides.length]);
-          poemIdx += 1;
+        if (classicPoems.length) {
+          sequence.push(classicPoems[classicIdx % classicPoems.length]);
+          classicIdx += 1;
+        }
+        if (cfPoems.length) {
+          sequence.push(cfPoems[cfIdx % cfPoems.length]);
+          cfIdx += 1;
         }
         for (let n = 0; n < everyN && i < itemSlides.length; n += 1, i += 1) {
           sequence.push(itemSlides[i]);
         }
       }
 
-      // Fallback if menu is empty: still show intro → promo → poems
       if (itemSlides.length === 0) {
         sequence.push(promo);
-        poemSlides.forEach((p) => sequence.push(p));
+        const max = Math.max(classicPoems.length, cfPoems.length);
+        for (let p = 0; p < max; p += 1) {
+          if (p < classicPoems.length) sequence.push(classicPoems[p]);
+          if (p < cfPoems.length) sequence.push(cfPoems[p]);
+        }
       }
 
       return sequence;
     }
 
-    function slideDurationSec(slide, defaultSec, poemSec) {
-      if (slide && slide.classList.contains('slide--poem')) return poemSec;
+    function slideDurationSec(slide, defaultSec, classicSec, cfSec) {
+      if (!slide) return defaultSec;
+      if (slide.classList.contains('slide--poem-cf')) return cfSec;
+      if (slide.classList.contains('slide--poem')) return classicSec;
       return defaultSec;
     }
 
-    function runSlideshow(sequence, durationSec, poemSec = POEM_DURATION_SEC) {
+    function runSlideshow(sequence, durationSec, classicSec, cfSec) {
       const bar = document.getElementById('progress');
       const uniqueSlides = [...new Set(sequence)];
       let index = 0;
@@ -586,7 +636,7 @@
 
       function show(i) {
         const active = sequence[i];
-        const dur = slideDurationSec(active, durationSec, poemSec);
+        const dur = slideDurationSec(active, durationSec, classicSec, cfSec);
         uniqueSlides.forEach((s) => s.classList.toggle('slide--active', s === active));
         syncPromoFallDistance(active);
         const uniqueIndex = uniqueSlides.indexOf(active);
@@ -608,7 +658,7 @@
       function scheduleNext() {
         clearTimer();
         const active = sequence[index];
-        const dur = slideDurationSec(active, durationSec, poemSec);
+        const dur = slideDurationSec(active, durationSec, classicSec, cfSec);
         timer = setTimeout(() => {
           index = (index + 1) % sequence.length;
           show(index);
@@ -641,35 +691,63 @@
         applyFrame(drinks.settings);
 
         const frame = document.getElementById('frame');
-        const itemSlides = [];
-
-        for (const { item, categoryTitle, kind } of flattenCategories(drinks, 'drinks')) {
-          itemSlides.push(createItemSlide(item, categoryTitle, drinks.brand, kind));
-        }
-
-        for (const { item, categoryTitle, kind } of flattenCategories(food, 'items')) {
-          itemSlides.push(createItemSlide(item, categoryTitle, drinks.brand, kind));
-        }
+        const drinkEntries = flattenCategories(drinks, 'drinks');
+        const foodEntries = flattenCategories(food, 'items');
+        const orderedEntries = orderMenuEntries(drinkEntries, foodEntries);
+        const itemSlides = orderedEntries.map((e) =>
+          createItemSlide(e.item, e.categoryTitle, drinks.brand, e.kind)
+        );
 
         const intro = createIntroSlide(drinks.brand);
         const promo = createPersonalDiscountSlide(drinks.brand);
-        const poemList = Array.isArray(poems.poems) ? poems.poems : [];
-        const poemSlides = poemList.map((p) =>
-          createPoemSlide(p, drinks.brand, poems.eyebrow || 'Осень')
+
+        const classicList = Array.isArray(poems.classic)
+          ? poems.classic
+          : Array.isArray(poems.poems)
+            ? poems.poems.filter((p) => p.author !== 'CoffeeFriends')
+            : [];
+        const cfList = Array.isArray(poems.coffeeFriends)
+          ? poems.coffeeFriends
+          : Array.isArray(poems.poems)
+            ? poems.poems.filter((p) => p.author === 'CoffeeFriends')
+            : [];
+
+        const classicPoems = classicList.map((p) =>
+          createPoemSlide(p, drinks.brand, {
+            eyebrow: poems.eyebrowClassic || 'Осень',
+            variant: 'classic',
+            badge: 'Стих'
+          })
         );
-        const poemSec = Number(poems.durationSec) || POEM_DURATION_SEC;
+        const cfPoems = cfList.map((p) =>
+          createPoemSlide(p, drinks.brand, {
+            eyebrow: poems.eyebrowCf || 'CoffeeFriends',
+            variant: 'cf',
+            badge: 'Наше'
+          })
+        );
+
+        const classicSec = Number(poems.classicDurationSec) || POEM_CLASSIC_DURATION_SEC;
+        const cfSec = Number(poems.cfDurationSec) || POEM_CF_DURATION_SEC;
         const sequence = buildSlideSequence(
           intro,
           promo,
-          poemSlides,
+          classicPoems,
+          cfPoems,
           itemSlides,
           PROMO_EVERY_N_CARDS
         );
 
-        // One DOM node per unique slide (promo is reused in the sequence)
-        [intro, promo, ...poemSlides, ...itemSlides].forEach((s) => frame.appendChild(s));
+        [intro, promo, ...classicPoems, ...cfPoems, ...itemSlides].forEach((s) =>
+          frame.appendChild(s)
+        );
         syncPromoFallDistance(promo);
-        runSlideshow(sequence, drinks.settings.slideDurationSec || 3.5, poemSec);
+        runSlideshow(
+          sequence,
+          drinks.settings.slideDurationSec || 3.5,
+          classicSec,
+          cfSec
+        );
       } catch (err) {
         document.body.innerHTML = `<pre style="color:#c9b067;padding:2rem;font-family:monospace">${err.message}\n\nЗапуск:\ncd d:\\projects\\MarketingCofe\\menu\npython -m http.server 8080\n\n→ http://localhost:8080/board.html</pre>`;
       }

@@ -1,7 +1,9 @@
 {
-  "durationSec": 11,
-  "eyebrow": "Осень",
-  "poems": [
+  "classicDurationSec": 11,
+  "cfDurationSec": 3.5,
+  "eyebrowClassic": "Осень",
+  "eyebrowCf": "CoffeeFriends",
+  "classic": [
     {
       "id": "pushkin-unylaya",
       "lines": [
@@ -101,7 +103,9 @@
         "Журча ещё бежит за мельницу ручей…"
       ],
       "author": "А. С. Пушкин"
-    },
+    }
+  ],
+  "coffeeFriends": [
     {
       "id": "cf-listya",
       "lines": [

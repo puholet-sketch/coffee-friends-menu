@@ -936,6 +936,23 @@ html[data-rotate="ccw"] .board__progress {
   opacity: 0.92;
 }
 
+.slide--poem-cf .poem__eyebrow {
+  color: var(--crimson);
+  letter-spacing: 0.08em;
+}
+
+.slide--poem-cf .poem__text {
+  font-size: clamp(24px, 4.6cqh, 44px);
+  font-weight: 700;
+  color: var(--ink);
+  max-width: 14em;
+}
+
+.slide--poem-cf .poem__author {
+  color: var(--muted);
+  opacity: 1;
+}
+
 /* ── Progress ── */
 
 .board__progress {
