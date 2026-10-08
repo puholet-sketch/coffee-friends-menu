@@ -814,28 +814,98 @@ html[data-rotate="ccw"] .board__progress {
 }
 
 .promo__pct {
+  position: relative;
   display: inline-block;
   color: var(--crimson);
   transform-origin: center center;
   will-change: transform, text-shadow, filter;
-  animation: promo-pct-breathe 1.5s ease-in-out infinite;
+  animation: promo-pct-boom 0.9s cubic-bezier(0.22, 0.9, 0.28, 1) infinite;
+  z-index: 1;
 }
 
-@keyframes promo-pct-breathe {
-  0%,
-  100% {
+/* Ghost ring / echo behind 20% — boom flash without breaking nowrap */
+.promo__pct::after {
+  content: "20%";
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(192, 0, 0, 0.55);
+  text-stroke: 2px rgba(192, 0, 0, 0.55);
+  transform-origin: center center;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  animation: promo-pct-ghost 0.9s cubic-bezier(0.22, 0.9, 0.28, 1) infinite;
+}
+
+@keyframes promo-pct-boom {
+  0% {
     transform: scale(1);
-    text-shadow:
-      0 0 0 transparent,
-      0 0 12px rgba(192, 0, 0, 0.12);
+    text-shadow: 0 0 0 transparent;
     filter: brightness(1);
   }
-  50% {
-    transform: scale(1.06);
+  12% {
+    transform: scale(1.14);
     text-shadow:
-      0 0 10px rgba(192, 0, 0, 0.28),
-      0 0 22px rgba(251, 90, 90, 0.22);
-    filter: brightness(1.05);
+      0 0 4px rgba(255, 255, 255, 0.9),
+      0 0 16px rgba(192, 0, 0, 0.75),
+      0 0 32px rgba(251, 90, 90, 0.55);
+    filter: brightness(1.18);
+  }
+  22% {
+    transform: scale(0.94);
+    text-shadow: 0 0 6px rgba(192, 0, 0, 0.25);
+    filter: brightness(1);
+  }
+  38% {
+    transform: scale(1.1);
+    text-shadow:
+      0 0 3px rgba(255, 255, 255, 0.75),
+      0 0 14px rgba(192, 0, 0, 0.65),
+      0 0 28px rgba(251, 90, 90, 0.45);
+    filter: brightness(1.14);
+  }
+  50% {
+    transform: scale(1);
+    text-shadow: 0 0 4px rgba(192, 0, 0, 0.2);
+    filter: brightness(1);
+  }
+  100% {
+    transform: scale(1);
+    text-shadow: 0 0 0 transparent;
+    filter: brightness(1);
+  }
+}
+
+@keyframes promo-pct-ghost {
+  0%,
+  8% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  12% {
+    opacity: 0.85;
+    transform: scale(1.22);
+  }
+  24% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+  34% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  38% {
+    opacity: 0.7;
+    transform: scale(1.18);
+  }
+  50% {
+    opacity: 0;
+    transform: scale(1.38);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
   }
 }
 
@@ -844,7 +914,12 @@ html[data-rotate="ccw"] .board__progress {
     animation: none;
     transform: none;
     filter: none;
-    text-shadow: 0 0 10px rgba(192, 0, 0, 0.18);
+    text-shadow: 0 0 12px rgba(192, 0, 0, 0.25);
+  }
+
+  .promo__pct::after {
+    animation: none;
+    opacity: 0;
   }
 }
 
