@@ -813,6 +813,41 @@ html[data-rotate="ccw"] .board__progress {
   white-space: nowrap;
 }
 
+.promo__pct {
+  display: inline-block;
+  color: var(--crimson);
+  transform-origin: center center;
+  will-change: transform, text-shadow, filter;
+  animation: promo-pct-breathe 1.5s ease-in-out infinite;
+}
+
+@keyframes promo-pct-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    text-shadow:
+      0 0 0 transparent,
+      0 0 12px rgba(192, 0, 0, 0.12);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.06);
+    text-shadow:
+      0 0 10px rgba(192, 0, 0, 0.28),
+      0 0 22px rgba(251, 90, 90, 0.22);
+    filter: brightness(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo__pct {
+    animation: none;
+    transform: none;
+    filter: none;
+    text-shadow: 0 0 10px rgba(192, 0, 0, 0.18);
+  }
+}
+
 .promo__lead {
   font-size: clamp(16px, 2.6cqh, 28px);
   line-height: 1.35;
