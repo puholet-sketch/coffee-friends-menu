@@ -84,19 +84,132 @@
             "matcha",
             "signature"
           ]
+        }
+      ]
+    },
+    {
+      "id": "seasonal",
+      "title": "Сезонные",
+      "drinks": [
+        {
+          "id": "latte-solenaya-karamel",
+          "name": "Латте солёная карамель",
+          "volume": "350 мл — 400 ₽ · 450 мл — 450 ₽",
+          "price": "от 400 ₽",
+          "new": true,
+          "description": "латте с солёной карамелью — зимний сезон",
+          "image": "assets/images/drinks/zimniy-latte-solenaya-karamel.jpg",
+          "tags": ["hot", "seasonal"]
+        },
+        {
+          "id": "kapuchino-nutella",
+          "name": "Капучино нутелла",
+          "volume": "350 мл — 400 ₽ · 450 мл — 450 ₽",
+          "price": "от 400 ₽",
+          "new": true,
+          "description": "капучино с нутеллой и ореховой нотой",
+          "image": "assets/images/drinks/zimniy-kapuchino-nutella.jpg",
+          "tags": ["hot", "seasonal"]
+        },
+        {
+          "id": "raf-snickers",
+          "name": "Раф сникерс",
+          "volume": "350 мл — 400 ₽ · 450 мл — 450 ₽",
+          "price": "от 400 ₽",
+          "new": true,
+          "description": "сливочный раф с шоколадом, карамелью и арахисом",
+          "image": "assets/images/drinks/zimniy-raf-snickers.jpg",
+          "tags": ["hot", "seasonal"]
         },
         {
           "id": "pine-raf",
-          "name": "Хвойный Раф",
-          "volume": "450 мл — 380 ₽",
+          "name": "Хвойный раф",
+          "volume": "350 мл — 400 ₽ · 450 мл — 450 ₽",
+          "price": "от 400 ₽",
           "new": true,
-          "price": "380 ₽",
           "description": "сливочный раф с посыпкой из кедровых орешков",
           "image": "assets/images/drinks/pine-raf.jpg",
-          "tags": [
-            "hot",
-            "signature"
-          ]
+          "tags": ["hot", "seasonal"]
+        },
+        {
+          "id": "pryanyy-chay-latte",
+          "name": "Пряный чай-латте",
+          "volume": "350 мл — 400 ₽ · 450 мл — 450 ₽",
+          "price": "от 400 ₽",
+          "new": true,
+          "description": "чай-латте с корицей и пряностями",
+          "image": "assets/images/drinks/zimniy-pryanyy-chay-latte.jpg",
+          "tags": ["hot", "seasonal"]
+        },
+        {
+          "id": "matcha-mango-apelsin",
+          "name": "Матча манго апельсин",
+          "volume": "350 мл — 400 ₽ · 450 мл — 450 ₽",
+          "price": "от 400 ₽",
+          "new": true,
+          "description": "матча с манго и апельсином — сезон",
+          "image": "assets/images/drinks/matcha-orange-cedar.jpg",
+          "tags": ["hot", "matcha", "seasonal"]
+        },
+        {
+          "id": "oblepiha_imbir",
+          "name": "Облепиха-Имбирь",
+          "volume": "450 мл — 350 ₽",
+          "price": "350 ₽",
+          "new": true,
+          "description": "облепиха и имбирь — яркий согревающий чай",
+          "image": "assets/images/drinks/oblepiha_imbir.jpg",
+          "tags": ["hot", "seasonal"]
+        },
+        {
+          "id": "apelsin_imbir",
+          "name": "Апельсин-Имбирь",
+          "volume": "450 мл — 350 ₽",
+          "price": "350 ₽",
+          "new": true,
+          "description": "апельсин с имбирём — цитрус и тепло",
+          "image": "assets/images/drinks/apelsin_imbir.jpg",
+          "tags": ["hot", "seasonal"]
+        },
+        {
+          "id": "malina_shipovnik",
+          "name": "Малина-Шиповник",
+          "volume": "450 мл — 350 ₽",
+          "price": "350 ₽",
+          "new": true,
+          "description": "малина и шиповник — ягодный горячий чай",
+          "image": "assets/images/drinks/malina_shipovnik_450_ml.jpg",
+          "tags": ["hot", "seasonal"]
+        },
+        {
+          "id": "punsh-klyukva-apelsin",
+          "name": "Пунш клюква-апельсин",
+          "volume": "450 мл — 350 ₽",
+          "price": "350 ₽",
+          "new": true,
+          "description": "горячий пунш с клюквой и апельсином",
+          "image": "assets/images/drinks/zimniy-punsh-klyukva-apelsin.jpg",
+          "tags": ["hot", "seasonal"]
+        },
+        {
+          "id": "glintveyn-myata",
+          "name": "Глинтвейн",
+          "volume": "450 мл — 350 ₽",
+          "price": "350 ₽",
+          "new": true,
+          "description": "безалкогольный глинтвейн с мятой — вместо лайм-имбирь-мята",
+          "image": "assets/images/drinks/glintveyn_b_a.jpg",
+          "tags": ["hot", "seasonal"]
+        },
+        {
+          "id": "klubnika-limon",
+          "name": "Клубника-лимон",
+          "volume": "450 мл — 350 ₽",
+          "price": "350 ₽",
+          "new": true,
+          "description": "клубника и лимон — фруктовый чай",
+          "image": "assets/images/drinks/klubnika_smorodina_450_ml.jpg",
+          "tags": ["hot", "seasonal"]
         }
       ]
     },
