@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20261008-winter5">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20261008-poems1">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,8 +27,9 @@
   </div>
 
   <script>
-    const ASSET_VER = '20261008-winter5';
+    const ASSET_VER = '20261008-poems1';
     const PROMO_EVERY_N_CARDS = 2;
+    const POEM_DURATION_SEC = 5.5;
     const MENU_DISCOUNT_PERCENT = 0; // paused — restore later; combos use item.discountPercent
     const PRELOAD_RADIUS = 2;
     const ROTATE_KEY = 'cf-menu-rotate';
@@ -60,11 +61,12 @@
       if (location.protocol === 'file:') {
         throw new Error('Открыт файл напрямую (file://). Браузер блокирует fetch JSON.\nНужен http://localhost:8080/board.html');
       }
-      let drinksRes, foodRes;
+      let drinksRes, foodRes, poemsRes;
       try {
-        [drinksRes, foodRes] = await Promise.all([
+        [drinksRes, foodRes, poemsRes] = await Promise.all([
           fetch('data/drinks.json'),
-          fetch('data/food.json')
+          fetch('data/food.json'),
+          fetch('data/poems.json')
         ]);
       } catch (e) {
         throw new Error('Failed to fetch — сервер не отвечает или открыт не тот URL.\nПроверьте: http://localhost:8080/board.html');
@@ -72,7 +74,40 @@
       if (!drinksRes.ok) throw new Error('Не найден data/drinks.json — запустите сервер из папки menu');
       const drinks = await drinksRes.json();
       const food = foodRes.ok ? await foodRes.json() : { categories: [] };
-      return { drinks, food };
+      const poems = poemsRes.ok ? await poemsRes.json() : { poems: [], durationSec: POEM_DURATION_SEC };
+      return { drinks, food, poems };
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function createPoemSlide(poem, brand, eyebrow) {
+      const slide = document.createElement('article');
+      slide.className = 'slide slide--poem';
+      const lines = (poem.lines || []).map((line) => `<p>${escapeHtml(line)}</p>`).join('');
+      slide.innerHTML = `
+        <div class="poem-card">
+          <header class="slide__header poem-card__head">
+            <div class="brand-mark">
+              <span class="brand-mark__icon" aria-hidden="true"></span>
+              <span class="brand-mark__text">${brandHtml(brand)}</span>
+            </div>
+            <span class="category-badge">Стих</span>
+          </header>
+          <div class="poem-card__body">
+            <div class="promo__mark" aria-hidden="true"></div>
+            <p class="poem__eyebrow">${escapeHtml(eyebrow || 'Осень')}</p>
+            <blockquote class="poem__text">${lines}</blockquote>
+            <p class="poem__author">— ${escapeHtml(poem.author || '')}</p>
+          </div>
+        </div>
+      `;
+      return slide;
     }
 
     function createIntroSlide(brand) {
@@ -430,7 +465,12 @@
     }
 
     function fitSlideCaptions(slide) {
-      if (!slide || slide.classList.contains('slide--intro') || slide.classList.contains('slide--promo')) return;
+      if (
+        !slide ||
+        slide.classList.contains('slide--intro') ||
+        slide.classList.contains('slide--promo') ||
+        slide.classList.contains('slide--poem')
+      ) return;
       const info = slide.querySelector('.slide__info');
       const name = slide.querySelector('.slide__name');
       const desc = slide.querySelector('.slide__desc');
@@ -499,25 +539,54 @@
       }
     }
 
-    function buildSlideSequence(intro, promo, itemSlides, everyN = PROMO_EVERY_N_CARDS) {
-      const sequence = [intro, promo];
-      for (let i = 0; i < itemSlides.length; i++) {
-        sequence.push(itemSlides[i]);
-        if ((i + 1) % everyN === 0) {
-          sequence.push(promo);
+    function buildSlideSequence(intro, promo, poemSlides, itemSlides, everyN = PROMO_EVERY_N_CARDS) {
+      // intro → promo → poem → N cards → promo → poem → N cards → …
+      const sequence = [intro];
+      let poemIdx = 0;
+      let i = 0;
+      const hasPoems = poemSlides.length > 0;
+
+      while (i < itemSlides.length) {
+        sequence.push(promo);
+        if (hasPoems) {
+          sequence.push(poemSlides[poemIdx % poemSlides.length]);
+          poemIdx += 1;
+        }
+        for (let n = 0; n < everyN && i < itemSlides.length; n += 1, i += 1) {
+          sequence.push(itemSlides[i]);
         }
       }
+
+      // Fallback if menu is empty: still show intro → promo → poems
+      if (itemSlides.length === 0) {
+        sequence.push(promo);
+        poemSlides.forEach((p) => sequence.push(p));
+      }
+
       return sequence;
     }
 
-    function runSlideshow(sequence, durationSec) {
+    function slideDurationSec(slide, defaultSec, poemSec) {
+      if (slide && slide.classList.contains('slide--poem')) return poemSec;
+      return defaultSec;
+    }
+
+    function runSlideshow(sequence, durationSec, poemSec = POEM_DURATION_SEC) {
       const bar = document.getElementById('progress');
       const uniqueSlides = [...new Set(sequence)];
       let index = 0;
       let timer = null;
 
+      function clearTimer() {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+      }
+
       function show(i) {
         const active = sequence[i];
+        const dur = slideDurationSec(active, durationSec, poemSec);
         uniqueSlides.forEach((s) => s.classList.toggle('slide--active', s === active));
         syncPromoFallDistance(active);
         const uniqueIndex = uniqueSlides.indexOf(active);
@@ -530,19 +599,25 @@
         bar.style.width = '0%';
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            bar.style.transition = `width ${durationSec}s linear`;
+            bar.style.transition = `width ${dur}s linear`;
             bar.style.width = '100%';
           });
         });
       }
 
-      function tick() {
-        index = (index + 1) % sequence.length;
-        show(index);
+      function scheduleNext() {
+        clearTimer();
+        const active = sequence[index];
+        const dur = slideDurationSec(active, durationSec, poemSec);
+        timer = setTimeout(() => {
+          index = (index + 1) % sequence.length;
+          show(index);
+          scheduleNext();
+        }, dur * 1000);
       }
 
       show(0);
-      timer = setInterval(tick, durationSec * 1000);
+      scheduleNext();
 
       window.addEventListener('resize', () => {
         syncPromoFallDistance(sequence[index]);
@@ -551,11 +626,10 @@
 
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
-          clearInterval(timer);
-          timer = null;
+          clearTimer();
         } else if (!timer) {
           show(index);
-          timer = setInterval(tick, durationSec * 1000);
+          scheduleNext();
         }
       });
     }
@@ -563,7 +637,7 @@
     async function init() {
       try {
         initOrientControl();
-        const { drinks, food } = await loadMenuData();
+        const { drinks, food, poems } = await loadMenuData();
         applyFrame(drinks.settings);
 
         const frame = document.getElementById('frame');
@@ -579,12 +653,23 @@
 
         const intro = createIntroSlide(drinks.brand);
         const promo = createPersonalDiscountSlide(drinks.brand);
-        const sequence = buildSlideSequence(intro, promo, itemSlides, PROMO_EVERY_N_CARDS);
+        const poemList = Array.isArray(poems.poems) ? poems.poems : [];
+        const poemSlides = poemList.map((p) =>
+          createPoemSlide(p, drinks.brand, poems.eyebrow || 'Осень')
+        );
+        const poemSec = Number(poems.durationSec) || POEM_DURATION_SEC;
+        const sequence = buildSlideSequence(
+          intro,
+          promo,
+          poemSlides,
+          itemSlides,
+          PROMO_EVERY_N_CARDS
+        );
 
         // One DOM node per unique slide (promo is reused in the sequence)
-        [intro, promo, ...itemSlides].forEach((s) => frame.appendChild(s));
+        [intro, promo, ...poemSlides, ...itemSlides].forEach((s) => frame.appendChild(s));
         syncPromoFallDistance(promo);
-        runSlideshow(sequence, drinks.settings.slideDurationSec || 3.5);
+        runSlideshow(sequence, drinks.settings.slideDurationSec || 3.5, poemSec);
       } catch (err) {
         document.body.innerHTML = `<pre style="color:#c9b067;padding:2rem;font-family:monospace">${err.message}\n\nЗапуск:\ncd d:\\projects\\MarketingCofe\\menu\npython -m http.server 8080\n\n→ http://localhost:8080/board.html</pre>`;
       }

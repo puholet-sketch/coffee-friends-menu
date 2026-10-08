@@ -822,6 +822,85 @@ html[data-rotate="ccw"] .board__progress {
   margin-bottom: 0;
 }
 
+/* ── Poem (autumn verses) ── */
+
+.slide.slide--poem {
+  display: flex;
+  flex-direction: column;
+  grid-template-rows: none;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.poem-card {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.poem-card__head {
+  flex: 0 0 auto;
+}
+
+.poem-card__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding:
+    clamp(16px, 3vh, 36px)
+    clamp(24px, 5.5vw, 48px)
+    clamp(28px, 5vh, 48px);
+}
+
+.poem__eyebrow {
+  font-family: var(--font-display);
+  font-size: clamp(12px, 1.8cqh, 16px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: clamp(16px, 2.4vh, 24px);
+}
+
+.poem__text {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  max-width: 18em;
+  font-family: var(--font-display);
+  font-size: clamp(22px, 4.2cqh, 40px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.28;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.poem__text p {
+  margin: 0 0 0.12em;
+}
+
+.poem__text p:last-child {
+  margin-bottom: 0;
+}
+
+.poem__author {
+  margin-top: clamp(22px, 3.2vh, 36px);
+  font-size: clamp(14px, 2.2cqh, 22px);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--crimson);
+  opacity: 0.92;
+}
+
 /* ── Progress ── */
 
 .board__progress {
