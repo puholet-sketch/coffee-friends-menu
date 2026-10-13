@@ -122,13 +122,33 @@
           "tags": ["hot", "seasonal"]
         },
         {
+          "id": "syrnyy-raf",
+          "name": "Сырный раф",
+          "volume": "350 мл — 400 ₽ · 450 мл — 450 ₽",
+          "price": "от 400 ₽",
+          "new": true,
+          "description": "сливочный сырный раф — 11 этаж",
+          "image": "assets/images/drinks/zimniy-syrnyy-raf.jpg",
+          "tags": ["hot", "seasonal"]
+        },
+        {
           "id": "pine-raf",
           "name": "Хвойный раф",
           "volume": "350 мл — 400 ₽ · 450 мл — 450 ₽",
           "price": "от 400 ₽",
           "new": true,
-          "description": "сливочный раф с посыпкой из кедровых орешков",
+          "description": "сливочный раф с посыпкой из кедровых орешков — 2 этаж",
           "image": "assets/images/drinks/pine-raf.jpg",
+          "tags": ["hot", "seasonal"]
+        },
+        {
+          "id": "latte-sinnabon",
+          "name": "Латте Синнабон",
+          "volume": "350 мл — 400 ₽ · 450 мл — 450 ₽",
+          "price": "от 400 ₽",
+          "new": true,
+          "description": "латте с корицей в стиле синнабон — только 2 этаж",
+          "image": "assets/images/drinks/zimniy-latte-sinnabon.jpg",
           "tags": ["hot", "seasonal"]
         },
         {
@@ -148,7 +168,7 @@
           "price": "от 400 ₽",
           "new": true,
           "description": "матча с манго и апельсином — сезон",
-          "image": "assets/images/drinks/matcha-orange-cedar.jpg",
+          "image": "assets/images/drinks/zimniy-matcha-mango-apelsin.jpg",
           "tags": ["hot", "matcha", "seasonal"]
         },
         {
@@ -193,12 +213,12 @@
         },
         {
           "id": "glintveyn-myata",
-          "name": "Глинтвейн",
+          "name": "Мята глинтвейн",
           "volume": "450 мл — 350 ₽",
           "price": "350 ₽",
           "new": true,
           "description": "безалкогольный глинтвейн с мятой — вместо лайм-имбирь-мята",
-          "image": "assets/images/drinks/glintveyn_b_a.jpg",
+          "image": "assets/images/drinks/zimniy-myata-glintveyn.jpg",
           "tags": ["hot", "seasonal"]
         },
         {
@@ -208,8 +228,18 @@
           "price": "350 ₽",
           "new": true,
           "description": "клубника и лимон — фруктовый чай",
-          "image": "assets/images/drinks/klubnika_smorodina_450_ml.jpg",
+          "image": "assets/images/drinks/zimniy-klubnika-limon.jpg",
           "tags": ["hot", "seasonal"]
+        },
+        {
+          "id": "fresh-seasonal",
+          "name": "Фреш",
+          "volume": "350 мл — 370 ₽ · 450 мл — 420 ₽",
+          "price": "от 370 ₽",
+          "new": true,
+          "description": "свежевыжатый фруктовый фреш — сезон",
+          "image": "assets/images/drinks/fresh_350_ml.jpg",
+          "tags": ["cold", "seasonal"]
         }
       ]
     },
