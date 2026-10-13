@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20261008-pct-jsboom">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20261014-poemfit">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,7 +27,7 @@
   </div>
 
   <script>
-    const ASSET_VER = '20261008-pct-jsboom';
+    const ASSET_VER = '20261014-poemfit';
     const PROMO_EVERY_N_CARDS = 2;
     const POEM_CLASSIC_DURATION_SEC = 22;
     const POEM_CF_DURATION_SEC = 5.25;
@@ -606,13 +606,55 @@
       return best;
     }
 
+    /** Shrink poem type until verse + author fit the body (no mid-line clip). */
+    function fitPoemText(slide) {
+      if (!slide || !slide.classList.contains('slide--poem')) return;
+      const body = slide.querySelector('.poem-card__body');
+      const text = slide.querySelector('.poem__text');
+      const author = slide.querySelector('.poem__author');
+      const eyebrow = slide.querySelector('.poem__eyebrow');
+      if (!body || !text) return;
+
+      const isCf = slide.classList.contains('slide--poem-cf');
+      const maxPx = isCf ? 44 : 40;
+      const minPx = 28; // TV floor — still readable at 2–4 m
+
+      text.style.fontSize = maxPx + 'px';
+      text.style.lineHeight = '';
+      if (author) author.style.marginTop = '';
+      if (eyebrow) eyebrow.style.marginBottom = '';
+
+      let guard = 100;
+      while (guard-- > 0 && body.scrollHeight > body.clientHeight + 1) {
+        const cur = parseFloat(text.style.fontSize) || maxPx;
+        if (cur <= minPx) break;
+        text.style.fontSize = cur - 1 + 'px';
+      }
+
+      // Still tight at floor: compress spacing, then allow down to 26px
+      if (body.scrollHeight > body.clientHeight + 1) {
+        text.style.lineHeight = '1.14';
+        if (author) author.style.marginTop = '10px';
+        if (eyebrow) eyebrow.style.marginBottom = '8px';
+        guard = 20;
+        while (guard-- > 0 && body.scrollHeight > body.clientHeight + 1) {
+          const cur = parseFloat(text.style.fontSize) || minPx;
+          if (cur <= 26) break;
+          text.style.fontSize = cur - 1 + 'px';
+        }
+      }
+    }
+
     function fitSlideCaptions(slide) {
       if (
         !slide ||
         slide.classList.contains('slide--intro') ||
-        slide.classList.contains('slide--promo') ||
-        slide.classList.contains('slide--poem')
+        slide.classList.contains('slide--promo')
       ) return;
+      if (slide.classList.contains('slide--poem')) {
+        fitPoemText(slide);
+        return;
+      }
       const info = slide.querySelector('.slide__info');
       const name = slide.querySelector('.slide__name');
       const desc = slide.querySelector('.slide__desc');
@@ -744,7 +786,10 @@
         const uniqueIndex = uniqueSlides.indexOf(active);
         preloadAround(uniqueSlides, Math.max(0, uniqueIndex));
         requestAnimationFrame(() => {
-          requestAnimationFrame(() => fitSlideCaptions(active));
+          requestAnimationFrame(() => {
+            fitSlideCaptions(active);
+            fitPoemText(active);
+          });
         });
 
         bar.style.transition = 'none';
@@ -774,6 +819,7 @@
       window.addEventListener('resize', () => {
         syncPromoFallDistance(sequence[index]);
         fitSlideCaptions(sequence[index]);
+        fitPoemText(sequence[index]);
       });
 
       document.addEventListener('visibilitychange', () => {
