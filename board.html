@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20261019-tg-qr-white">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20261019-tg-qr-tetris">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,17 +27,23 @@
   </div>
 
   <script>
-    const ASSET_VER = '20261019-tg-qr-white';
+    const ASSET_VER = '20261019-tg-qr-tetris';
     const PROMO_EVERY_N_CARDS = 2;
     const POEM_CLASSIC_DURATION_SEC = 22;
     const POEM_CF_DURATION_SEC = 5.25;
-    const TG_ORDER_DURATION_SEC = 9;
+    /* Assembly: 12 pcs × 350ms stagger + fall ≈ 4.4s; hold complete QR ≈ 5.5s */
+    const TG_ORDER_DURATION_SEC = 10;
     const PROMO_PCT_CYCLE_MS = 900;
     const TG_BOT_URL = 'https://t.me/coffeefriends_orders_bot';
     const TG_BOT_HANDLE = '@coffeefriends_orders_bot';
     const TG_QR_SRC = `assets/images/order/bot-qr.png?v=${ASSET_VER}`;
+    const TG_QR_COLS = 4;
+    const TG_QR_ROWS = 3;
+    const TG_QR_STAGGER_MS = 350;
+    const TG_QR_FALL_MS = 480;
 
     let promoPctRaf = null;
+    let tgQrTimers = [];
 
     function stopPromoPctBoom() {
       if (promoPctRaf != null) {
@@ -288,6 +294,94 @@
       return slide;
     }
 
+    function tgQrTileHtml(col, row, index) {
+      const x = TG_QR_COLS <= 1 ? 0 : (col / (TG_QR_COLS - 1)) * 100;
+      const y = TG_QR_ROWS <= 1 ? 0 : (row / (TG_QR_ROWS - 1)) * 100;
+      return `
+        <div
+          class="tg-qr-tile"
+          data-tg-qr-tile
+          style="
+            --tg-col:${col};
+            --tg-row:${row};
+            --tg-bg-x:${x}%;
+            --tg-bg-y:${y}%;
+            --tg-delay:${index * TG_QR_STAGGER_MS}ms;
+          "
+        ></div>`;
+    }
+
+    function buildTgQrBoardHtml() {
+      const tiles = [];
+      let i = 0;
+      /* Drop order: bottom row first, left→right (stack like Tetris). */
+      for (let row = TG_QR_ROWS - 1; row >= 0; row -= 1) {
+        for (let col = 0; col < TG_QR_COLS; col += 1) {
+          tiles.push(tgQrTileHtml(col, row, i));
+          i += 1;
+        }
+      }
+      return `
+        <div
+          class="tg-qr-board"
+          data-tg-qr-board
+          style="--tg-cols:${TG_QR_COLS};--tg-rows:${TG_QR_ROWS};--tg-fall-ms:${TG_QR_FALL_MS}ms;"
+          role="img"
+          aria-label="QR-код бота ${TG_BOT_HANDLE}"
+        >${tiles.join('')}</div>`;
+    }
+
+    function clearTgQrTimers() {
+      tgQrTimers.forEach((id) => clearTimeout(id));
+      tgQrTimers = [];
+    }
+
+    function resetTgQrAssemble(slide) {
+      clearTgQrTimers();
+      if (!slide) return;
+      const board = slide.querySelector('[data-tg-qr-board]');
+      if (!board) return;
+      board.classList.remove('tg-qr-board--assembling', 'tg-qr-board--done');
+      board.querySelectorAll('[data-tg-qr-tile]').forEach((tile) => {
+        tile.classList.remove('tg-qr-tile--set');
+      });
+    }
+
+    function startTgQrAssemble(slide) {
+      clearTgQrTimers();
+      document.querySelectorAll('.slide--tg').forEach((s) => {
+        if (s !== slide) resetTgQrAssemble(s);
+      });
+      if (!slide || !slide.classList.contains('slide--tg')) return;
+
+      const board = slide.querySelector('[data-tg-qr-board]');
+      if (!board) return;
+
+      const tiles = [...board.querySelectorAll('[data-tg-qr-tile]')];
+      board.classList.remove('tg-qr-board--done');
+      board.classList.add('tg-qr-board--assembling');
+      tiles.forEach((tile) => tile.classList.remove('tg-qr-tile--set'));
+
+      /* Force reflow so removing --set then re-adding animates every visit. */
+      void board.offsetWidth;
+
+      tiles.forEach((tile, index) => {
+        const id = setTimeout(() => {
+          if (!slide.classList.contains('slide--active')) return;
+          tile.classList.add('tg-qr-tile--set');
+          if (index === tiles.length - 1) {
+            const doneId = setTimeout(() => {
+              if (slide.classList.contains('slide--active')) {
+                board.classList.add('tg-qr-board--done');
+              }
+            }, TG_QR_FALL_MS + 40);
+            tgQrTimers.push(doneId);
+          }
+        }, index * TG_QR_STAGGER_MS);
+        tgQrTimers.push(id);
+      });
+    }
+
     function createTelegramOrderSlide(brand) {
       const slide = document.createElement('article');
       slide.className = 'slide slide--promo slide--tg';
@@ -309,20 +403,18 @@
             </h2>
             <p class="tg-card__handle">${escapeHtml(TG_BOT_HANDLE)}</p>
             <div class="tg-card__qr-wrap">
-              <img
-                class="tg-card__qr"
-                src="${TG_QR_SRC}"
-                width="720"
-                height="720"
-                alt="QR-код бота ${TG_BOT_HANDLE}"
-                decoding="async"
-              >
+              ${buildTgQrBoardHtml()}
             </div>
             <p class="promo__lead tg-card__lead">Наведите камеру — откроется бот</p>
             <p class="tg-card__hint">Заказ сейчас или предзаказ · этаж 2 / 11 · оплата у стойки</p>
           </div>
         </div>
       `;
+
+      const board = slide.querySelector('[data-tg-qr-board]');
+      if (board) {
+        board.style.setProperty('--tg-qr-url', `url("${TG_QR_SRC}")`);
+      }
       return slide;
     }
 
@@ -855,6 +947,13 @@
         uniqueSlides.forEach((s) => s.classList.toggle('slide--active', s === active));
         syncPromoFallDistance(active);
         startPromoPctBoom(active);
+        if (active.classList.contains('slide--tg')) {
+          startTgQrAssemble(active);
+        } else {
+          uniqueSlides.forEach((s) => {
+            if (s.classList.contains('slide--tg')) resetTgQrAssemble(s);
+          });
+        }
         const uniqueIndex = uniqueSlides.indexOf(active);
         preloadAround(uniqueSlides, Math.max(0, uniqueIndex));
         requestAnimationFrame(() => {

@@ -973,14 +973,52 @@ html[data-rotate="ccw"] .board__progress {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
-.tg-card__qr {
-  display: block;
+/* Tetris-like QR: grid tiles fall into place */
+.tg-qr-board {
+  --tg-cols: 4;
+  --tg-rows: 3;
+  --tg-fall-ms: 480ms;
+  position: relative;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  display: grid;
+  grid-template-columns: repeat(var(--tg-cols), 1fr);
+  grid-template-rows: repeat(var(--tg-rows), 1fr);
+  gap: 0;
+  background: #fff;
+}
+
+.tg-qr-tile {
+  grid-column: calc(var(--tg-col) + 1);
+  grid-row: calc(var(--tg-row) + 1);
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  background-image: var(--tg-qr-url);
+  background-repeat: no-repeat;
+  background-size: calc(var(--tg-cols) * 100%) calc(var(--tg-rows) * 100%);
+  background-position: var(--tg-bg-x) var(--tg-bg-y);
   image-rendering: -webkit-optimize-contrast;
+  opacity: 0;
+  transform: translate3d(0, calc(-100% * (var(--tg-rows) + 1.25)), 0);
+  will-change: transform, opacity;
+}
+
+.tg-qr-board--assembling .tg-qr-tile--set {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform var(--tg-fall-ms) cubic-bezier(0.22, 0.82, 0.28, 1),
+    opacity 90ms linear;
+}
+
+.tg-qr-board--done .tg-qr-tile {
+  opacity: 1;
+  transform: none;
+  transition: none;
 }
 
 .tg-card__lead {
