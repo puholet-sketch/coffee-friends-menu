@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20261019-tg-qr-tetris">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20261019-tg-qr-tetris2">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,20 +27,34 @@
   </div>
 
   <script>
-    const ASSET_VER = '20261019-tg-qr-tetris';
+    const ASSET_VER = '20261019-tg-qr-tetris2';
     const PROMO_EVERY_N_CARDS = 2;
     const POEM_CLASSIC_DURATION_SEC = 22;
     const POEM_CF_DURATION_SEC = 5.25;
-    /* Assembly: 12 pcs × 350ms stagger + fall ≈ 4.4s; hold complete QR ≈ 5.5s */
-    const TG_ORDER_DURATION_SEC = 10;
     const PROMO_PCT_CYCLE_MS = 900;
     const TG_BOT_URL = 'https://t.me/coffeefriends_orders_bot';
     const TG_BOT_HANDLE = '@coffeefriends_orders_bot';
     const TG_QR_SRC = `assets/images/order/bot-qr.png?v=${ASSET_VER}`;
-    const TG_QR_COLS = 4;
-    const TG_QR_ROWS = 3;
+    /* ~10 irregular blocks; stagger 0.35s; fall ~0.5s; then hold to scan */
     const TG_QR_STAGGER_MS = 350;
-    const TG_QR_FALL_MS = 480;
+    const TG_QR_FALL_MS = 500;
+    const TG_QR_HOLD_AFTER_SEC = 5.5;
+    /* Drop order is array order: bottom foundation first (Tetris stack). */
+    const TG_QR_PIECES = [
+      { x: 0, y: 65, w: 40, h: 35, spin: -10 },
+      { x: 40, y: 75, w: 35, h: 25, spin: 8 },
+      { x: 75, y: 75, w: 25, h: 25, spin: -12 },
+      { x: 70, y: 45, w: 30, h: 30, spin: 11 },
+      { x: 35, y: 50, w: 35, h: 25, spin: -7 },
+      { x: 0, y: 30, w: 35, h: 35, spin: 9 },
+      { x: 35, y: 30, w: 35, h: 20, spin: -13 },
+      { x: 50, y: 20, w: 50, h: 25, spin: 6 },
+      { x: 0, y: 0, w: 50, h: 30, spin: -8 },
+      { x: 50, y: 0, w: 50, h: 20, spin: 10 }
+    ];
+    const TG_ORDER_DURATION_SEC =
+      ((TG_QR_PIECES.length - 1) * TG_QR_STAGGER_MS + TG_QR_FALL_MS) / 1000 +
+      TG_QR_HOLD_AFTER_SEC;
 
     let promoPctRaf = null;
     let tgQrTimers = [];
@@ -294,41 +308,32 @@
       return slide;
     }
 
-    function tgQrTileHtml(col, row, index) {
-      const x = TG_QR_COLS <= 1 ? 0 : (col / (TG_QR_COLS - 1)) * 100;
-      const y = TG_QR_ROWS <= 1 ? 0 : (row / (TG_QR_ROWS - 1)) * 100;
+    function tgQrTileHtml(piece, index) {
       return `
         <div
           class="tg-qr-tile"
           data-tg-qr-tile
           style="
-            --tg-col:${col};
-            --tg-row:${row};
-            --tg-bg-x:${x}%;
-            --tg-bg-y:${y}%;
-            --tg-delay:${index * TG_QR_STAGGER_MS}ms;
+            --tg-x:${piece.x};
+            --tg-y:${piece.y};
+            --tg-w:${piece.w};
+            --tg-h:${piece.h};
+            --tg-spin:${piece.spin}deg;
+            --tg-i:${index};
           "
-        ></div>`;
+        ><span class="tg-qr-tile__face" aria-hidden="true"></span></div>`;
     }
 
     function buildTgQrBoardHtml() {
-      const tiles = [];
-      let i = 0;
-      /* Drop order: bottom row first, left→right (stack like Tetris). */
-      for (let row = TG_QR_ROWS - 1; row >= 0; row -= 1) {
-        for (let col = 0; col < TG_QR_COLS; col += 1) {
-          tiles.push(tgQrTileHtml(col, row, i));
-          i += 1;
-        }
-      }
+      const tiles = TG_QR_PIECES.map((piece, i) => tgQrTileHtml(piece, i)).join('');
       return `
         <div
           class="tg-qr-board"
           data-tg-qr-board
-          style="--tg-cols:${TG_QR_COLS};--tg-rows:${TG_QR_ROWS};--tg-fall-ms:${TG_QR_FALL_MS}ms;"
+          style="--tg-fall-ms:${TG_QR_FALL_MS}ms;--tg-piece-count:${TG_QR_PIECES.length};"
           role="img"
           aria-label="QR-код бота ${TG_BOT_HANDLE}"
-        >${tiles.join('')}</div>`;
+        >${tiles}</div>`;
     }
 
     function clearTgQrTimers() {
@@ -1049,7 +1054,10 @@
 
         const classicSec = Number(poems.classicDurationSec) || POEM_CLASSIC_DURATION_SEC;
         const cfSec = Number(poems.cfDurationSec) || POEM_CF_DURATION_SEC;
-        const tgSec = Number(poems.tgOrderDurationSec) || TG_ORDER_DURATION_SEC;
+        const tgSec = Math.max(
+          Number(poems.tgOrderDurationSec) || 0,
+          TG_ORDER_DURATION_SEC
+        );
         const sequence = buildSlideSequence(
           intro,
           promo,
