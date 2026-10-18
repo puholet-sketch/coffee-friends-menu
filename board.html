@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20261019-tg-order">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20261019-tg-bot-title">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,7 +27,7 @@
   </div>
 
   <script>
-    const ASSET_VER = '20261019-tg-order';
+    const ASSET_VER = '20261019-tg-bot-title';
     const PROMO_EVERY_N_CARDS = 2;
     const POEM_CLASSIC_DURATION_SEC = 22;
     const POEM_CF_DURATION_SEC = 5.25;
@@ -304,7 +304,9 @@
           </header>
           <div class="promo-card__body tg-card__body">
             <p class="promo__eyebrow">Онлайн-заказ</p>
-            <h2 class="promo__title tg-card__title">Заказ в Telegram</h2>
+            <h2 class="promo__title tg-card__title">
+              Заказ в <span class="tg-card__bot">${escapeHtml(TG_BOT_HANDLE)}</span>
+            </h2>
             <p class="promo__offer tg-card__offer">
               <span class="promo__pct" data-boom-text="Telegram">Telegram</span>
             </p>
@@ -318,7 +320,6 @@
                 decoding="async"
               >
             </div>
-            <p class="tg-card__handle">${escapeHtml(TG_BOT_HANDLE)}</p>
             <p class="promo__lead tg-card__lead">Наведите камеру — откроется бот</p>
             <p class="tg-card__hint">Заказ сейчас или предзаказ · этаж 2 / 11 · оплата у стойки</p>
           </div>
