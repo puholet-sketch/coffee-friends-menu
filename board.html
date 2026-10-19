@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20261019-tg-qr-tetris2">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20261019-tg-qr-canvas">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,37 +27,50 @@
   </div>
 
   <script>
-    const ASSET_VER = '20261019-tg-qr-tetris2';
+    const ASSET_VER = '20261019-tg-qr-canvas';
     const PROMO_EVERY_N_CARDS = 2;
     const POEM_CLASSIC_DURATION_SEC = 22;
     const POEM_CF_DURATION_SEC = 5.25;
     const PROMO_PCT_CYCLE_MS = 900;
     const TG_BOT_URL = 'https://t.me/coffeefriends_orders_bot';
     const TG_BOT_HANDLE = '@coffeefriends_orders_bot';
+    /* Document-relative — never put url() in CSS custom props used by menu.css */
     const TG_QR_SRC = `assets/images/order/bot-qr.png?v=${ASSET_VER}`;
-    /* ~10 irregular blocks; stagger 0.35s; fall ~0.5s; then hold to scan */
-    const TG_QR_STAGGER_MS = 350;
-    const TG_QR_FALL_MS = 500;
+
+    /* DeepSeek-style canvas tetris on a square cell grid, then real QR fades in */
+    const TG_QR_ROWS = 10;
+    const TG_QR_COLS = 10;
+    const TG_QR_SPEED = 7; /* cells per second */
+    const TG_QR_STAGGER_MS = 500;
+    const TG_QR_DROP_FROM = 4;
+    const TG_QR_BOUNCE_MS = 300;
     const TG_QR_HOLD_AFTER_SEC = 5.5;
-    /* Drop order is array order: bottom foundation first (Tetris stack). */
-    const TG_QR_PIECES = [
-      { x: 0, y: 65, w: 40, h: 35, spin: -10 },
-      { x: 40, y: 75, w: 35, h: 25, spin: 8 },
-      { x: 75, y: 75, w: 25, h: 25, spin: -12 },
-      { x: 70, y: 45, w: 30, h: 30, spin: 11 },
-      { x: 35, y: 50, w: 35, h: 25, spin: -7 },
-      { x: 0, y: 30, w: 35, h: 35, spin: 9 },
-      { x: 35, y: 30, w: 35, h: 20, spin: -13 },
-      { x: 50, y: 20, w: 50, h: 25, spin: 6 },
-      { x: 0, y: 0, w: 50, h: 30, spin: -8 },
-      { x: 50, y: 0, w: 50, h: 20, spin: 10 }
+    const TG_QR_SHAPES = [
+      [[0, 0], [0, 1], [0, 2], [1, 2]],
+      [[0, 7], [0, 8], [0, 9], [1, 7]],
+      [[1, 0], [2, 0], [2, 1], [2, 2]],
+      [[1, 9], [2, 7], [2, 8], [2, 9]],
+      [[3, 3], [3, 4], [3, 5], [3, 6]],
+      [[4, 1], [5, 0], [5, 1], [5, 2]],
+      [[5, 7], [5, 8], [6, 7], [6, 8]],
+      [[7, 0], [7, 1], [7, 2], [8, 0]],
+      [[7, 6], [7, 7], [8, 7], [8, 8]],
+      [[8, 2], [9, 0], [9, 1], [9, 2]]
     ];
-    const TG_ORDER_DURATION_SEC =
-      ((TG_QR_PIECES.length - 1) * TG_QR_STAGGER_MS + TG_QR_FALL_MS) / 1000 +
-      TG_QR_HOLD_AFTER_SEC;
+    const TG_ORDER_DURATION_SEC = (() => {
+      let maxEnd = 0;
+      TG_QR_SHAPES.forEach((cells, i) => {
+        const maxRow = Math.max(...cells.map((c) => c[0]));
+        const dist = maxRow + TG_QR_DROP_FROM;
+        const duration = (dist / TG_QR_SPEED) * 1000;
+        maxEnd = Math.max(maxEnd, i * TG_QR_STAGGER_MS + duration + TG_QR_BOUNCE_MS);
+      });
+      return maxEnd / 1000 + 0.45 + TG_QR_HOLD_AFTER_SEC;
+    })();
 
     let promoPctRaf = null;
-    let tgQrTimers = [];
+    let tgQrRaf = null;
+    let tgQrRevealTimer = null;
 
     function stopPromoPctBoom() {
       if (promoPctRaf != null) {
@@ -308,82 +321,226 @@
       return slide;
     }
 
-    function tgQrTileHtml(piece, index) {
-      return `
-        <div
-          class="tg-qr-tile"
-          data-tg-qr-tile
-          style="
-            --tg-x:${piece.x};
-            --tg-y:${piece.y};
-            --tg-w:${piece.w};
-            --tg-h:${piece.h};
-            --tg-spin:${piece.spin}deg;
-            --tg-i:${index};
-          "
-        ><span class="tg-qr-tile__face" aria-hidden="true"></span></div>`;
-    }
-
     function buildTgQrBoardHtml() {
-      const tiles = TG_QR_PIECES.map((piece, i) => tgQrTileHtml(piece, i)).join('');
       return `
         <div
           class="tg-qr-board"
           data-tg-qr-board
-          style="--tg-fall-ms:${TG_QR_FALL_MS}ms;--tg-piece-count:${TG_QR_PIECES.length};"
           role="img"
           aria-label="QR-код бота ${TG_BOT_HANDLE}"
-        >${tiles}</div>`;
+        >
+          <canvas class="tg-qr-canvas" data-tg-qr-canvas aria-hidden="true"></canvas>
+          <img
+            class="tg-qr-final"
+            data-tg-qr-final
+            alt=""
+            decoding="async"
+            draggable="false"
+          />
+        </div>`;
     }
 
-    function clearTgQrTimers() {
-      tgQrTimers.forEach((id) => clearTimeout(id));
-      tgQrTimers = [];
+    function stopTgQrLoop() {
+      if (tgQrRaf != null) {
+        cancelAnimationFrame(tgQrRaf);
+        tgQrRaf = null;
+      }
+      if (tgQrRevealTimer != null) {
+        clearTimeout(tgQrRevealTimer);
+        tgQrRevealTimer = null;
+      }
+    }
+
+    function tgQrRoundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      if (ctx.roundRect) {
+        ctx.roundRect(x, y, w, h, r);
+        return;
+      }
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function sizeTgQrCanvas(board, canvas) {
+      const cssSize = Math.max(120, Math.floor(board.clientWidth || board.offsetWidth || 280));
+      const pad = Math.max(8, Math.round(cssSize * 0.06));
+      const cell = (cssSize - pad * 2) / TG_QR_COLS;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(cssSize * dpr);
+      canvas.height = Math.round(cssSize * dpr);
+      canvas.style.width = cssSize + 'px';
+      canvas.style.height = cssSize + 'px';
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, size: cssSize, pad, cell };
+    }
+
+    function buildTgQrPieces() {
+      return TG_QR_SHAPES.map((cells, i) => {
+        const maxRow = Math.max(...cells.map((c) => c[0]));
+        const dist = maxRow + TG_QR_DROP_FROM;
+        return {
+          cells,
+          start: i * TG_QR_STAGGER_MS,
+          duration: (dist / TG_QR_SPEED) * 1000,
+          dyStart: -dist
+        };
+      });
+    }
+
+    function drawTgQrBackdrop(ctx, size, pad, cell) {
+      ctx.clearRect(0, 0, size, size);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+      ctx.strokeStyle = '#f1f1f1';
+      ctx.lineWidth = 1;
+      for (let i = 1; i < TG_QR_COLS; i += 1) {
+        const x = Math.round(pad + i * cell) + 0.5;
+        ctx.beginPath();
+        ctx.moveTo(x, pad);
+        ctx.lineTo(x, pad + TG_QR_ROWS * cell);
+        ctx.stroke();
+      }
+      for (let j = 1; j < TG_QR_ROWS; j += 1) {
+        const y = Math.round(pad + j * cell) + 0.5;
+        ctx.beginPath();
+        ctx.moveTo(pad, y);
+        ctx.lineTo(pad + TG_QR_COLS * cell, y);
+        ctx.stroke();
+      }
+    }
+
+    function drawTgQrPiece(ctx, pad, cell, piece, dy, pop, flying) {
+      ctx.save();
+      if (flying) ctx.globalAlpha = 0.82;
+      ctx.fillStyle = '#111111';
+      const gap = Math.max(1.2, cell * 0.045);
+      for (const [r, c] of piece.cells) {
+        const cx = pad + c * cell + cell / 2;
+        const cy = pad + (r + dy) * cell + cell / 2;
+        const s = (cell - gap * 2) * (1 + pop);
+        const rad = Math.min(5, s * 0.18);
+        tgQrRoundRect(ctx, cx - s / 2, cy - s / 2, s, s, rad);
+        ctx.fill();
+      }
+      ctx.restore();
     }
 
     function resetTgQrAssemble(slide) {
-      clearTgQrTimers();
+      stopTgQrLoop();
       if (!slide) return;
       const board = slide.querySelector('[data-tg-qr-board]');
       if (!board) return;
       board.classList.remove('tg-qr-board--assembling', 'tg-qr-board--done');
-      board.querySelectorAll('[data-tg-qr-tile]').forEach((tile) => {
-        tile.classList.remove('tg-qr-tile--set');
-      });
+      const finalImg = board.querySelector('[data-tg-qr-final]');
+      if (finalImg) {
+        finalImg.classList.remove('tg-qr-final--show');
+        finalImg.style.opacity = '0';
+      }
+      const canvas = board.querySelector('[data-tg-qr-canvas]');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.style.opacity = '1';
+      }
     }
 
     function startTgQrAssemble(slide) {
-      clearTgQrTimers();
+      stopTgQrLoop();
       document.querySelectorAll('.slide--tg').forEach((s) => {
         if (s !== slide) resetTgQrAssemble(s);
       });
       if (!slide || !slide.classList.contains('slide--tg')) return;
 
       const board = slide.querySelector('[data-tg-qr-board]');
-      if (!board) return;
+      const canvas = board && board.querySelector('[data-tg-qr-canvas]');
+      const finalImg = board && board.querySelector('[data-tg-qr-final]');
+      if (!board || !canvas) return;
 
-      const tiles = [...board.querySelectorAll('[data-tg-qr-tile]')];
+      if (finalImg) {
+        if (finalImg.getAttribute('src') !== TG_QR_SRC) finalImg.src = TG_QR_SRC;
+        finalImg.classList.remove('tg-qr-final--show');
+        finalImg.style.opacity = '0';
+      }
+      canvas.style.opacity = '1';
       board.classList.remove('tg-qr-board--done');
       board.classList.add('tg-qr-board--assembling');
-      tiles.forEach((tile) => tile.classList.remove('tg-qr-tile--set'));
 
-      /* Force reflow so removing --set then re-adding animates every visit. */
-      void board.offsetWidth;
+      /* Size after paint so the active slide has real box metrics. */
+      requestAnimationFrame(() => {
+        if (!slide.classList.contains('slide--active')) return;
+        const geo = sizeTgQrCanvas(board, canvas);
+        if (geo.size < 80) {
+          /* Retry once if layout not ready */
+          requestAnimationFrame(() => {
+            if (slide.classList.contains('slide--active')) startTgQrAssemble(slide);
+          });
+          return;
+        }
 
-      tiles.forEach((tile, index) => {
-        const id = setTimeout(() => {
+        const pieces = buildTgQrPieces();
+        let t0 = 0;
+        let finished = false;
+
+        function revealQr() {
           if (!slide.classList.contains('slide--active')) return;
-          tile.classList.add('tg-qr-tile--set');
-          if (index === tiles.length - 1) {
-            const doneId = setTimeout(() => {
-              if (slide.classList.contains('slide--active')) {
-                board.classList.add('tg-qr-board--done');
-              }
-            }, TG_QR_FALL_MS + 40);
-            tgQrTimers.push(doneId);
+          board.classList.add('tg-qr-board--done');
+          canvas.style.opacity = '0';
+          if (finalImg) {
+            finalImg.classList.add('tg-qr-final--show');
+            finalImg.style.opacity = '1';
           }
-        }, index * TG_QR_STAGGER_MS);
-        tgQrTimers.push(id);
+          if (tgQrRaf != null) {
+            cancelAnimationFrame(tgQrRaf);
+            tgQrRaf = null;
+          }
+        }
+
+        function render(now) {
+          if (!slide.classList.contains('slide--active')) {
+            stopTgQrLoop();
+            return;
+          }
+          if (!t0) t0 = now;
+          const t = now - t0;
+          const { ctx, size, pad, cell } = geo;
+
+          drawTgQrBackdrop(ctx, size, pad, cell);
+
+          let landed = 0;
+          for (const p of pieces) {
+            const local = t - p.start;
+            if (local <= 0) continue;
+            let prog = local / p.duration;
+            if (prog >= 1) {
+              prog = 1;
+              landed += 1;
+            }
+            const tp = Math.pow(prog, 1.55);
+            const dy = p.dyStart * (1 - tp);
+            let pop = 0;
+            if (prog === 1) {
+              const since = local - p.duration;
+              if (since < TG_QR_BOUNCE_MS) {
+                pop = 0.14 * Math.sin((since / TG_QR_BOUNCE_MS) * Math.PI);
+              }
+            }
+            drawTgQrPiece(ctx, pad, cell, p, dy, pop, prog < 1);
+          }
+
+          if (!finished && landed === pieces.length) {
+            finished = true;
+            tgQrRevealTimer = setTimeout(revealQr, TG_QR_BOUNCE_MS + 120);
+          }
+
+          tgQrRaf = requestAnimationFrame(render);
+        }
+
+        tgQrRaf = requestAnimationFrame(render);
       });
     }
 
@@ -416,12 +573,13 @@
         </div>
       `;
 
-      const board = slide.querySelector('[data-tg-qr-board]');
-      if (board) {
-        board.style.setProperty('--tg-qr-url', `url("${TG_QR_SRC}")`);
-      }
+      const finalImg = slide.querySelector('[data-tg-qr-final]');
+      if (finalImg) finalImg.src = TG_QR_SRC;
       return slide;
     }
+
+    window.startTgQrAssemble = startTgQrAssemble;
+    window.resetTgQrAssemble = resetTgQrAssemble;
 
     function syncPromoFallDistance(slide) {
       if (!isBoomSlide(slide)) return;
