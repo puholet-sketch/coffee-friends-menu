@@ -956,7 +956,7 @@
       return best;
     }
 
-    /** Shrink poem type until verse + author fit the body (no mid-line clip). */
+    /** Shrink poem type until verse + author fit the body (no mid-line clip / overlap). */
     function fitPoemText(slide) {
       if (!slide || !slide.classList.contains('slide--poem')) return;
       const body = slide.querySelector('.poem-card__body');
@@ -967,29 +967,44 @@
 
       const isCf = slide.classList.contains('slide--poem-cf');
       const maxPx = isCf ? 44 : 40;
-      const minPx = 28; // TV floor — still readable at 2–4 m
+      const minPx = 26; // TV floor — still readable at 2–4 m
 
       text.style.fontSize = maxPx + 'px';
       text.style.lineHeight = '';
-      if (author) author.style.marginTop = '';
+      body.style.gap = '';
+      if (author) {
+        author.style.marginTop = '';
+        author.style.paddingTop = '';
+      }
       if (eyebrow) eyebrow.style.marginBottom = '';
 
-      let guard = 100;
-      while (guard-- > 0 && body.scrollHeight > body.clientHeight + 1) {
+      /** Body scroll overflow, or verse rect colliding with author (flex-shrink overlap). */
+      function poemOverflows(minAuthorGap) {
+        if (body.scrollHeight > body.clientHeight + 1) return true;
+        if (author) {
+          const tr = text.getBoundingClientRect();
+          const ar = author.getBoundingClientRect();
+          if (tr.bottom > ar.top - minAuthorGap + 0.5) return true;
+        }
+        return false;
+      }
+
+      let guard = 120;
+      while (guard-- > 0 && poemOverflows(10)) {
         const cur = parseFloat(text.style.fontSize) || maxPx;
         if (cur <= minPx) break;
         text.style.fontSize = cur - 1 + 'px';
       }
 
-      // Still tight at floor: compress spacing, then allow down to 26px
-      if (body.scrollHeight > body.clientHeight + 1) {
+      // Still tight at floor: compress line-height / gap, then allow down to 22px
+      if (poemOverflows(10)) {
         text.style.lineHeight = '1.14';
-        if (author) author.style.marginTop = '10px';
-        if (eyebrow) eyebrow.style.marginBottom = '8px';
-        guard = 20;
-        while (guard-- > 0 && body.scrollHeight > body.clientHeight + 1) {
+        body.style.gap = '10px';
+        if (author) author.style.paddingTop = '4px';
+        guard = 30;
+        while (guard-- > 0 && poemOverflows(6)) {
           const cur = parseFloat(text.style.fontSize) || minPx;
-          if (cur <= 26) break;
+          if (cur <= 22) break;
           text.style.fontSize = cur - 1 + 'px';
         }
       }
