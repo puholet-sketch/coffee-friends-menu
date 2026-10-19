@@ -962,7 +962,7 @@ html[data-rotate="ccw"] .board__progress {
   max-width: 100%;
   aspect-ratio: 1 / 1;
   height: auto;
-  margin: clamp(4px, 1vh, 12px) auto;
+  margin: clamp(72px, 22vh, 240px) auto clamp(8px, 1.2vh, 14px);
   padding: clamp(8px, 1.2cqh, 14px);
   border-radius: 18px;
   background: #fff;
