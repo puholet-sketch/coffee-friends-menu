@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20261019-tg-qr-lower">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20261019-cat-gif">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,11 +27,13 @@
   </div>
 
   <script>
-    const ASSET_VER = '20261019-tg-qr-lower';
+    const ASSET_VER = '20261019-cat-gif';
     const PROMO_EVERY_N_CARDS = 2;
     const POEM_CLASSIC_DURATION_SEC = 22;
     const POEM_CF_DURATION_SEC = 5.25;
+    const CAT_SLIDE_DURATION_SEC = 3.5;
     const PROMO_PCT_CYCLE_MS = 900;
+    const CAT_GIF_SRC = `assets/images/cat/barista-spin.gif?v=${ASSET_VER}`;
     const TG_BOT_URL = 'https://t.me/coffeefriends_orders_bot';
     const TG_BOT_HANDLE = '@coffeefriends_orders_bot';
     /* Document-relative — never put url() in CSS custom props used by menu.css */
@@ -578,6 +580,38 @@
       return slide;
     }
 
+    function createCatSlide(brand) {
+      const slide = document.createElement('article');
+      slide.className = 'slide slide--cat';
+      slide.innerHTML = `
+        <div class="cat-card">
+          <header class="slide__header cat-card__head">
+            <div class="brand-mark">
+              <span class="brand-mark__icon" aria-hidden="true"></span>
+              <span class="brand-mark__text">${brandHtml(brand)}</span>
+            </div>
+            <span class="category-badge">Мяу</span>
+          </header>
+          <div class="cat-card__body">
+            <p class="cat-card__eyebrow">Друг за стойкой</p>
+            <div class="cat-card__gif">
+              <img
+                src="${CAT_GIF_SRC}"
+                alt="Рыжий полосатый кот крутит латте"
+                width="540"
+                height="720"
+                decoding="async"
+                draggable="false"
+              />
+            </div>
+            <h2 class="cat-card__title">Рыжий бариста</h2>
+            <p class="cat-card__lead">Крутит латте. Крадёт сливки. Работает.</p>
+          </div>
+        </div>
+      `;
+      return slide;
+    }
+
     window.startTgQrAssemble = startTgQrAssemble;
     window.resetTgQrAssemble = resetTgQrAssemble;
 
@@ -965,7 +999,8 @@
       if (
         !slide ||
         slide.classList.contains('slide--intro') ||
-        slide.classList.contains('slide--promo')
+        slide.classList.contains('slide--promo') ||
+        slide.classList.contains('slide--cat')
       ) return;
       if (slide.classList.contains('slide--poem')) {
         fitPoemText(slide);
@@ -1043,12 +1078,13 @@
       intro,
       promo,
       telegram,
+      cat,
       classicPoems,
       cfPoems,
       itemSlides,
       everyN = PROMO_EVERY_N_CARDS
     ) {
-      // intro → promo → Telegram QR → classic → CF → N cards → …
+      // intro → promo → Telegram QR → cat GIF → classic → CF → N cards → …
       const sequence = [intro];
       let classicIdx = 0;
       let cfIdx = 0;
@@ -1057,6 +1093,7 @@
       while (i < itemSlides.length) {
         sequence.push(promo);
         if (telegram) sequence.push(telegram);
+        if (cat) sequence.push(cat);
         if (classicPoems.length) {
           sequence.push(classicPoems[classicIdx % classicPoems.length]);
           classicIdx += 1;
@@ -1073,6 +1110,7 @@
       if (itemSlides.length === 0) {
         sequence.push(promo);
         if (telegram) sequence.push(telegram);
+        if (cat) sequence.push(cat);
         const max = Math.max(classicPoems.length, cfPoems.length);
         for (let p = 0; p < max; p += 1) {
           if (p < classicPoems.length) sequence.push(classicPoems[p]);
@@ -1083,15 +1121,16 @@
       return sequence;
     }
 
-    function slideDurationSec(slide, defaultSec, classicSec, cfSec, tgSec) {
+    function slideDurationSec(slide, defaultSec, classicSec, cfSec, tgSec, catSec) {
       if (!slide) return defaultSec;
       if (slide.classList.contains('slide--tg')) return tgSec;
+      if (slide.classList.contains('slide--cat')) return catSec;
       if (slide.classList.contains('slide--poem-cf')) return cfSec;
       if (slide.classList.contains('slide--poem')) return classicSec;
       return defaultSec;
     }
 
-    function runSlideshow(sequence, durationSec, classicSec, cfSec, tgSec) {
+    function runSlideshow(sequence, durationSec, classicSec, cfSec, tgSec, catSec) {
       const bar = document.getElementById('progress');
       const uniqueSlides = [...new Set(sequence)];
       let index = 0;
@@ -1106,7 +1145,7 @@
 
       function show(i) {
         const active = sequence[i];
-        const dur = slideDurationSec(active, durationSec, classicSec, cfSec, tgSec);
+        const dur = slideDurationSec(active, durationSec, classicSec, cfSec, tgSec, catSec);
         uniqueSlides.forEach((s) => s.classList.toggle('slide--active', s === active));
         syncPromoFallDistance(active);
         startPromoPctBoom(active);
@@ -1139,7 +1178,7 @@
       function scheduleNext() {
         clearTimer();
         const active = sequence[index];
-        const dur = slideDurationSec(active, durationSec, classicSec, cfSec, tgSec);
+        const dur = slideDurationSec(active, durationSec, classicSec, cfSec, tgSec, catSec);
         timer = setTimeout(() => {
           index = (index + 1) % sequence.length;
           show(index);
@@ -1183,6 +1222,7 @@
         const intro = createIntroSlide(drinks.brand);
         const promo = createPersonalDiscountSlide(drinks.brand);
         const telegram = createTelegramOrderSlide(drinks.brand);
+        const cat = createCatSlide(drinks.brand);
 
         const classicList = Array.isArray(poems.classic)
           ? poems.classic
@@ -1216,17 +1256,19 @@
           Number(poems.tgOrderDurationSec) || 0,
           TG_ORDER_DURATION_SEC
         );
+        const catSec = Number(poems.catDurationSec) || CAT_SLIDE_DURATION_SEC;
         const sequence = buildSlideSequence(
           intro,
           promo,
           telegram,
+          cat,
           classicPoems,
           cfPoems,
           itemSlides,
           PROMO_EVERY_N_CARDS
         );
 
-        [intro, promo, telegram, ...classicPoems, ...cfPoems, ...itemSlides].forEach((s) =>
+        [intro, promo, telegram, cat, ...classicPoems, ...cfPoems, ...itemSlides].forEach((s) =>
           frame.appendChild(s)
         );
         syncPromoFallDistance(promo);
@@ -1236,7 +1278,8 @@
           drinks.settings.slideDurationSec || 3.5,
           classicSec,
           cfSec,
-          tgSec
+          tgSec,
+          catSec
         );
       } catch (err) {
         document.body.innerHTML = `<pre style="color:#c9b067;padding:2rem;font-family:monospace">${err.message}\n\nЗапуск:\ncd d:\\projects\\MarketingCofe\\menu\npython -m http.server 8080\n\n→ http://localhost:8080/board.html</pre>`;
