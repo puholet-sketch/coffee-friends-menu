@@ -1222,7 +1222,8 @@
         const intro = createIntroSlide(drinks.brand);
         const promo = createPersonalDiscountSlide(drinks.brand);
         const telegram = createTelegramOrderSlide(drinks.brand);
-        const cat = createCatSlide(drinks.brand);
+        /* Temporarily off rotation — createCatSlide + assets/images/cat/barista-spin.gif kept */
+        const cat = null;
 
         const classicList = Array.isArray(poems.classic)
           ? poems.classic
@@ -1268,7 +1269,7 @@
           PROMO_EVERY_N_CARDS
         );
 
-        [intro, promo, telegram, cat, ...classicPoems, ...cfPoems, ...itemSlides].forEach((s) =>
+        [intro, promo, telegram, ...classicPoems, ...cfPoems, ...itemSlides].forEach((s) =>
           frame.appendChild(s)
         );
         syncPromoFallDistance(promo);
