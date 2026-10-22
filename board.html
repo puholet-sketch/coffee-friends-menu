@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/menu.css?v=20261019-cat-gif">
+  <link rel="stylesheet" href="assets/css/menu.css?v=20261022-tg-tv">
 </head>
 <body>
   <div class="board" id="board">
@@ -27,7 +27,7 @@
   </div>
 
   <script>
-    const ASSET_VER = '20261019-cat-gif';
+    const ASSET_VER = '20261022-tg-tv';
     const PROMO_EVERY_N_CARDS = 2;
     const POEM_CLASSIC_DURATION_SEC = 22;
     const POEM_CF_DURATION_SEC = 5.25;
@@ -432,6 +432,21 @@
       ctx.restore();
     }
 
+    function showTgQrFallback(board, canvas, finalImg) {
+      if (!board) return;
+      board.classList.add('tg-qr-board--done');
+      board.classList.remove('tg-qr-board--assembling');
+      if (canvas) {
+        canvas.style.opacity = '0';
+        canvas.style.zIndex = '0';
+      }
+      if (finalImg) {
+        if (finalImg.getAttribute('src') !== TG_QR_SRC) finalImg.src = TG_QR_SRC;
+        finalImg.style.opacity = '1';
+        finalImg.style.zIndex = '1';
+      }
+    }
+
     function resetTgQrAssemble(slide) {
       stopTgQrLoop();
       if (!slide) return;
@@ -440,14 +455,14 @@
       board.classList.remove('tg-qr-board--assembling', 'tg-qr-board--done');
       const finalImg = board.querySelector('[data-tg-qr-final]');
       if (finalImg) {
-        finalImg.classList.remove('tg-qr-final--show');
-        finalImg.style.opacity = '0';
+        if (finalImg.getAttribute('src') !== TG_QR_SRC) finalImg.src = TG_QR_SRC;
+        finalImg.style.opacity = '1';
       }
       const canvas = board.querySelector('[data-tg-qr-canvas]');
       if (canvas) {
         const ctx = canvas.getContext('2d');
         if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-        canvas.style.opacity = '1';
+        canvas.style.opacity = '0';
       }
     }
 
@@ -461,46 +476,57 @@
       const board = slide.querySelector('[data-tg-qr-board]');
       const canvas = board && board.querySelector('[data-tg-qr-canvas]');
       const finalImg = board && board.querySelector('[data-tg-qr-final]');
-      if (!board || !canvas) return;
+      if (!board) return;
 
+      /* QR image always first — ZEUS/Android TV: rAF/canvas often dead */
       if (finalImg) {
         if (finalImg.getAttribute('src') !== TG_QR_SRC) finalImg.src = TG_QR_SRC;
-        finalImg.classList.remove('tg-qr-final--show');
-        finalImg.style.opacity = '0';
+        finalImg.style.opacity = '1';
       }
-      canvas.style.opacity = '1';
-      board.classList.remove('tg-qr-board--done');
-      board.classList.add('tg-qr-board--assembling');
+      if (!canvas || typeof canvas.getContext !== 'function') {
+        showTgQrFallback(board, canvas, finalImg);
+        return;
+      }
 
-      /* Size after paint so the active slide has real box metrics. */
-      requestAnimationFrame(() => {
+      board.classList.remove('tg-qr-board--done');
+      /* Do not add --assembling until a real frame paints (keeps QR visible). */
+
+      function beginAssemble() {
         if (!slide.classList.contains('slide--active')) return;
-        const geo = sizeTgQrCanvas(board, canvas);
-        if (geo.size < 80) {
-          /* Retry once if layout not ready */
-          requestAnimationFrame(() => {
-            if (slide.classList.contains('slide--active')) startTgQrAssemble(slide);
-          });
+        let geo;
+        try {
+          geo = sizeTgQrCanvas(board, canvas);
+        } catch (e) {
+          showTgQrFallback(board, canvas, finalImg);
+          return;
+        }
+        const boxW = board.clientWidth || board.offsetWidth || 0;
+        const boxH = board.clientHeight || board.offsetHeight || 0;
+        if (!geo || !geo.ctx || geo.size < 100 || boxW < 80 || boxH < 80) {
+          showTgQrFallback(board, canvas, finalImg);
           return;
         }
 
         const pieces = buildTgQrPieces();
         let t0 = 0;
         let finished = false;
+        let painted = false;
 
         function revealQr() {
           if (!slide.classList.contains('slide--active')) return;
-          board.classList.add('tg-qr-board--done');
-          canvas.style.opacity = '0';
-          if (finalImg) {
-            finalImg.classList.add('tg-qr-final--show');
-            finalImg.style.opacity = '1';
-          }
+          showTgQrFallback(board, canvas, finalImg);
           if (tgQrRaf != null) {
             cancelAnimationFrame(tgQrRaf);
             tgQrRaf = null;
           }
         }
+
+        /* If rAF never fires (common on ZEUS), keep static QR */
+        tgQrRevealTimer = setTimeout(() => {
+          if (!painted && slide.classList.contains('slide--active')) {
+            revealQr();
+          }
+        }, 600);
 
         function render(now) {
           if (!slide.classList.contains('slide--active')) {
@@ -511,39 +537,72 @@
           const t = now - t0;
           const { ctx, size, pad, cell } = geo;
 
-          drawTgQrBackdrop(ctx, size, pad, cell);
-
-          let landed = 0;
-          for (const p of pieces) {
-            const local = t - p.start;
-            if (local <= 0) continue;
-            let prog = local / p.duration;
-            if (prog >= 1) {
-              prog = 1;
-              landed += 1;
+          try {
+            drawTgQrBackdrop(ctx, size, pad, cell);
+            let landed = 0;
+            for (const p of pieces) {
+              const local = t - p.start;
+              if (local <= 0) continue;
+              let prog = local / p.duration;
+              if (prog >= 1) {
+                prog = 1;
+                landed += 1;
+              }
+              const tp = Math.pow(prog, 1.55);
+              const dy = p.dyStart * (1 - tp);
+              let pop = 0;
+              if (prog === 1) {
+                const since = local - p.duration;
+                if (since < TG_QR_BOUNCE_MS) {
+                  pop = 0.14 * Math.sin((since / TG_QR_BOUNCE_MS) * Math.PI);
+                }
+              }
+              drawTgQrPiece(ctx, pad, cell, p, dy, pop, prog < 1);
             }
-            const tp = Math.pow(prog, 1.55);
-            const dy = p.dyStart * (1 - tp);
-            let pop = 0;
-            if (prog === 1) {
-              const since = local - p.duration;
-              if (since < TG_QR_BOUNCE_MS) {
-                pop = 0.14 * Math.sin((since / TG_QR_BOUNCE_MS) * Math.PI);
+
+            if (!painted) {
+              painted = true;
+              board.classList.add('tg-qr-board--assembling');
+              canvas.style.opacity = '1';
+              if (tgQrRevealTimer != null) {
+                clearTimeout(tgQrRevealTimer);
+                tgQrRevealTimer = null;
               }
             }
-            drawTgQrPiece(ctx, pad, cell, p, dy, pop, prog < 1);
-          }
 
-          if (!finished && landed === pieces.length) {
-            finished = true;
-            tgQrRevealTimer = setTimeout(revealQr, TG_QR_BOUNCE_MS + 120);
+            if (!finished && landed === pieces.length) {
+              finished = true;
+              tgQrRevealTimer = setTimeout(revealQr, TG_QR_BOUNCE_MS + 120);
+            }
+          } catch (e) {
+            revealQr();
+            return;
           }
 
           tgQrRaf = requestAnimationFrame(render);
         }
 
         tgQrRaf = requestAnimationFrame(render);
+        /* setTimeout pump if rAF is broken */
+        setTimeout(() => {
+          if (!painted && slide.classList.contains('slide--active')) {
+            revealQr();
+          }
+        }, 400);
+      }
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(beginAssemble);
       });
+      setTimeout(() => {
+        if (
+          slide.classList.contains('slide--active') &&
+          !board.classList.contains('tg-qr-board--done') &&
+          !board.classList.contains('tg-qr-board--assembling')
+        ) {
+          beginAssemble();
+        }
+      }, 300);
     }
 
     function createTelegramOrderSlide(brand) {
@@ -576,7 +635,11 @@
       `;
 
       const finalImg = slide.querySelector('[data-tg-qr-final]');
-      if (finalImg) finalImg.src = TG_QR_SRC;
+      if (finalImg) {
+        finalImg.src = TG_QR_SRC;
+        finalImg.classList.add('tg-qr-final--show');
+        finalImg.style.opacity = '1';
+      }
       return slide;
     }
 
@@ -1240,31 +1303,9 @@
         /* Temporarily off rotation — createCatSlide + assets/images/cat/barista-spin.gif kept */
         const cat = null;
 
-        const classicList = Array.isArray(poems.classic)
-          ? poems.classic
-          : Array.isArray(poems.poems)
-            ? poems.poems.filter((p) => p.author !== 'CoffeeFriends')
-            : [];
-        const cfList = Array.isArray(poems.coffeeFriends)
-          ? poems.coffeeFriends
-          : Array.isArray(poems.poems)
-            ? poems.poems.filter((p) => p.author === 'CoffeeFriends')
-            : [];
-
-        const classicPoems = classicList.map((p) =>
-          createPoemSlide(p, drinks.brand, {
-            eyebrow: poems.eyebrowClassic || 'Осень',
-            variant: 'classic',
-            badge: 'Стих'
-          })
-        );
-        const cfPoems = cfList.map((p) =>
-          createPoemSlide(p, drinks.brand, {
-            eyebrow: poems.eyebrowCf || 'CoffeeFriends',
-            variant: 'cf',
-            badge: 'Наше'
-          })
-        );
+        /* Poems temporarily off rotation — createPoemSlide + data/poems.json kept */
+        const classicPoems = [];
+        const cfPoems = [];
 
         const classicSec = Number(poems.classicDurationSec) || POEM_CLASSIC_DURATION_SEC;
         const cfSec = Number(poems.cfDurationSec) || POEM_CF_DURATION_SEC;

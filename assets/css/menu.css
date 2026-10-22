@@ -954,67 +954,78 @@ html[data-rotate="ccw"] .board__progress {
   white-space: nowrap;
 }
 
+/* Square QR box without aspect-ratio/cqh — ZEUS Android TV WebView often drops those */
 .tg-card__qr-wrap {
   position: relative;
   z-index: 1;
   flex: 0 0 auto;
-  width: min(68%, 46cqh, 380px);
-  max-width: 100%;
-  aspect-ratio: 1 / 1;
-  height: auto;
-  margin: clamp(72px, 22vh, 240px) auto clamp(8px, 1.2vh, 14px);
-  padding: clamp(8px, 1.2cqh, 14px);
+  width: 56%;
+  max-width: 340px;
+  margin: clamp(24px, 6vh, 80px) auto clamp(8px, 1vh, 14px);
+  padding: 0;
   border-radius: 18px;
   background: #fff;
   border: 2px solid rgba(192, 0, 0, 0.18);
   box-shadow:
     0 0 0 1px rgba(201, 176, 103, 0.35),
     0 12px 36px rgba(0, 0, 0, 0.12);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
+}
+
+.tg-card__qr-wrap::before {
+  content: "";
+  display: block;
+  padding-top: 100%; /* 1:1 square polyfill */
 }
 
 /* Canvas tetris grid (DeepSeek-style) → real scannable QR */
 .tg-qr-board {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  width: auto;
+  height: auto;
   background: #fff;
   overflow: hidden;
 }
 
 .tg-qr-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
   display: block;
   width: 100%;
   height: 100%;
   background: #fff;
-  transition: opacity 280ms ease;
+  z-index: 0;
+  opacity: 0;
 }
 
 .tg-qr-final {
   position: absolute;
-  inset: 0;
+  left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
   object-position: center;
-  opacity: 0;
-  z-index: 2;
+  opacity: 1; /* always on — ZEUS TV may never run rAF/canvas */
+  z-index: 1;
   pointer-events: none;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
-  transition: opacity 280ms ease;
 }
 
-.tg-qr-final.tg-qr-final--show,
-.tg-qr-board--done .tg-qr-final {
+.tg-qr-board--assembling .tg-qr-canvas {
   opacity: 1;
+  z-index: 2; /* cover QR only while frames actually paint */
 }
 
 .tg-qr-board--done .tg-qr-canvas {
   opacity: 0;
+  z-index: 0;
 }
 
 .tg-card__lead {
